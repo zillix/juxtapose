@@ -225,7 +225,7 @@ package
 					
 				}
 				
-				if (!(PlayState.instance.endingGame && state == PlayState.instance.endingState))
+				if (!(PlayState.instance.endingGame && state == PlayState.instance.endingState) && !FlxG.keys.DOWN)
 				{
 					if (leftPressed)
 					{
