@@ -30,11 +30,11 @@ package
 			offset.x = width / 2;
 			offset.y = height / 2 - scale.x;
 		
-			addAnimation("0", [0], 0, false);
-			addAnimation("1", [1], 0, false);
-			addAnimation("2", [2], 0, false);
-			addAnimation("3", [3], 0, false);
-			addAnimation("4", [4], 0, false);
+			addAnimation("0", [0, 1], 1);
+			addAnimation("1", [2, 3], 1);
+			addAnimation("2", [4, 5], 1);
+			addAnimation("3", [6, 7], 1);
+			addAnimation("4", [8, 9], 1);
 			
 			play("1");
 			
