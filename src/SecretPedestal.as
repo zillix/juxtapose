@@ -7,31 +7,47 @@ package
 	 * ...
 	 * @author zillix
 	 */
-	public class FeederTree extends OrbHolder 
+	public class SecretPedestal extends OrbHolder 
 	{
-		[Embed(source = "data/feederTreeSmall.png")]	public var FeederTreeSprite:Class;
-		[Embed(source = "data/statue.mp3")]	public var StatueSound:Class;
+		[Embed(source = "data/secretPedestal.png")]	public var SecretPedestalSprite:Class;
 		
-		public static const MAX_SEEDS:int = 1;
-		public static const BONUS_SEEDS:int = 5;
-		public var ORB_OFFSET:int = 41;
-		public var seedsSpawned:int = 0;
+		private var DISAPPEAR_VELOCITY:int = -100;
+		private var REAPPEAR_VELOCITY:int = 100;
+		private var isDisappeared:Boolean = false;
 		
-		public function FeederTree(X:Number, Y:Number)
+		private var startPosition:FlxPoint;
+		
+		private var invertGlow:InvertGlow;
+		
+		public function SecretPedestal(X:Number, Y:Number)
 		{
-			super(X, Y,World.LIGHT, 102);
-			loadGraphic(FeederTreeSprite);
+			super(X, Y, World.LIGHT, 5);
+			loadGraphic(SecretPedestalSprite);
 			offset.x = 0;
 			orbHeight = 86;
-			scale.x = scale.y = 2;
-			offset.x = -width / 2;
+			scale.x = 2;
+			scale.y = 2;
 			offset.y = height * 3 / 2;
 			
+			startPosition = new FlxPoint(X, Y);
+			/*scale.x = scale.y = 2;
+			offset.x = -width / 2;
+			offset.y = height * 3 / 2;
+			*/
+			
+			if (PlayState.instance.DEBUG)
+			{
+				visible = true;
+			}
+			else
+			{
+				visible = false;
+			}
 		}
 		
 		override public function playPlacementSound() : void
 		{
-			FlxG.play(StatueSound, PlayState.SFX_VOLUME);
+			//FlxG.play(StatueSound, PlayState.SFX_VOLUME);
 		}
 		
 		override public function addOrb(orb:Orb) : Boolean
@@ -39,6 +55,8 @@ package
 			var bool:Boolean = super.addOrb(orb);
 			if (bool)
 			{
+				invertGlow = new InvertGlow(x, y + (state == World.LIGHT ? -orbHeight : orbHeight));
+				PlayState.instance.invertGlows.add(invertGlow);
 				orb.consume();
 			}
 			
@@ -53,21 +71,23 @@ package
 		override public function update() : void
 		{
 			super.update();
-			if (orbs.length > 0)
+			
+			if (invertGlow != null && !invertGlow.alive)
 			{
-				if (!orbs[0].alive)
-				{
-					orbs.length = 0;
-					if (seedsSpawned < MAX_SEEDS)
-					{
-						PlayState.instance.spawnSeed(seedsSpawned);
-					}
-					seedsSpawned++;
-					if (seedsSpawned >= BONUS_SEEDS)
-					{
-						doBonus();
-					}
-				}
+				startDisappearing();
+				invertGlow = null;
+			}
+			
+			if (velocity.y < 0 && y <= startPosition.y -height)
+			{
+				isDisappeared = true;
+				velocity.y = 0;
+			}
+			
+			if (velocity.y > 0 && y >= startPosition.y)
+			{
+				velocity.y = 0;
+				y = startPosition.y;
 			}
 		}
 		
@@ -76,7 +96,28 @@ package
 			
 		}
 		
-		override protected function arrangeOrbs() : void
+		override public function onStateChanged(newState:int) : void
+		{
+			if (newState == World.LIGHT && isDisappeared)
+			{
+				startReappearing();
+			}
+		}
+		
+		private function startDisappearing() : void
+		{
+			velocity.y = DISAPPEAR_VELOCITY;
+		}
+		
+		private function startReappearing() : void
+		{
+			velocity.y = REAPPEAR_VELOCITY;
+			isDisappeared = false;
+		}
+		
+		
+		
+		/*override protected function arrangeOrbs() : void
 		{
 			for (var i:int = 0; i < orbs.length; i++)
 			{
@@ -86,16 +127,16 @@ package
 				orb.y = y + (state == World.LIGHT ? -orbHeight : orbHeight);
 				realOrb.targetPoint = orb;
 			}
-		}
+		}*/
 		
-		override public function getHitbox() : Rectangle
+		/*override public function getHitbox() : Rectangle
 		{
 			var bounds:Rectangle = super.getHitbox();
 			bounds.width -= 50;
 			return bounds;
 		}
-		
-		override public function getExamineText() : Vector.<PlayText>
+		*/
+		/*override public function getExamineText() : Vector.<PlayText>
 		{
 			var text:Vector.<PlayText> = new Vector.<PlayText>();
 			var orbCount:int = PlayState.instance.getOrbCount(state);
@@ -122,14 +163,14 @@ package
 			}
 			
 			return text;
-		}
+		}*/
 		
 		override public function get canActivate() : Boolean 
 		{
-			if (PlayState.instance.isEligibleForWorshipEnd)
+			/*if (PlayState.instance.isEligibleForWorshipEnd)
 			{
 				return true;
-			}
+			}*/
 			
 			return false;
 		}

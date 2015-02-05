@@ -11,7 +11,7 @@ package
 		[Embed(source = "data/towerSmall4.png")]	public var TowerSprite:Class;
 		
 		public static const STARTING_ORBS:int = 4;
-		public static const SECRET_ORBS:int = 7;
+		public static const SECRET_ORBS:int = 4;
 		
 		public static const ORB_Y_OFFSET:int = 20;
 		public static const ORB_Y_SPACING:Number = 24.5;

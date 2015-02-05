@@ -46,7 +46,6 @@ package
 		public static const RISE_TIME:Number = 1;
 		public var rising:Boolean = false;
 		
-		
 		public function Player(X:Number, Y:Number, state:int)
 		{
 			super(X, Y, state);

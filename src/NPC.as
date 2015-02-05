@@ -423,7 +423,7 @@ package
 				
 				if (PlayState.instance.getOrbCount(World.LIGHT) > 0)
 				{
-					addText(quips, "where are the other " + Orb.ORB_NAME_PLURAL + " going?");
+					addText(quips, "where do the orbs go at night?");
 				}
 				
 				if (plants > 0)

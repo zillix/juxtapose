@@ -35,7 +35,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.0";
+		public var version:String = "v1.02p";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -70,6 +70,7 @@ package
 		public var tower:Tower;
 		
 		public var orbGlows:FlxGroup;
+		public var invertGlows:FlxGroup;
 		public var backgroundOrbs:FlxGroup;
 		public var foregroundOrbs:FlxGroup;
 		public var lightOrbHolders:FlxGroup
@@ -178,6 +179,7 @@ package
 			textFields = new FlxGroup();
 			endingTextFields = new FlxGroup();
 			endingSprites = new FlxGroup();
+			invertGlows = new FlxGroup();
 			
 			FlxG.playMusic(useAlternateMusic ? DayThemeLong : DayThemeLongSlow, MUSIC_VOLUME);
 			
@@ -242,6 +244,8 @@ package
 			add(emitters);
 			
 			add(fiends);
+			
+			add(invertGlows);
 			
 			add(darkness);
 			
@@ -693,6 +697,7 @@ package
 				cleanGroup(emitters);
 				cleanGroup(darkOrbHolders);
 				cleanGroup(lightOrbHolders);
+				cleanGroup(invertGlows);
 			}
 		}
 		
@@ -766,6 +771,7 @@ package
 		private static const PLAYER_LOCATION:uint = 0x4D2122;
 		private static const SEED_LOCATION:uint = 0x994344;
 		private static const CRUSH_PLANT:uint = 0x02DA37;
+		private static const SECRET_PEDESTAL:uint = 0x7F8582;
 		private function processMapPixel(color:uint, column:int, row:int, scale:int, bitmapWidth:int, bitmapHeight:int) : void
 		{
 			// if it's in the light half, we want to bottom-justify it
@@ -831,6 +837,10 @@ package
 				case CRUSH_PLANT:
 					var crushPlant:CrushPlant = new CrushPlant(worldX, worldY);
 					//gameSprites.add(crushPlant);
+					break;
+				case SECRET_PEDESTAL:
+					var secretPedestal:SecretPedestal = new SecretPedestal(worldX, worldY);
+					lightOrbHolders.add(secretPedestal);
 					break;
 			}
 			
