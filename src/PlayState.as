@@ -84,6 +84,7 @@ package
 		public var gameSprites:FlxGroup;
 		public var textFields:FlxGroup;
 		public var endingTextFields:FlxGroup
+		public var finalInvertGlowLayer:FlxGroup;
 		
 		public var textPlayer:TextPlayer;
 		
@@ -103,7 +104,8 @@ package
 		public static const END_TEND:int = 4;
 		public static const END_WORSHIP:int = 5;
 		public static const END_RESIGN:int = 6;
-		public static const END_SECRET:int = 7;
+		//public static const END_SECRET:int = 7;
+		public static const END_JUXTAPOSE:int = 7;
 		
 		public static const MAX_ENDINGS:int = 8;
 		
@@ -121,6 +123,7 @@ package
 		public static var playedOnce:Boolean = false;
 		
 		public var feederTree:FeederTree;
+		public var secretPedestal:SecretPedestal;
 		
 		public var endingSprites:FlxGroup;
 		
@@ -151,6 +154,7 @@ package
 		public var STARTING_ALPHA:Number = .6;
 		public var controlsSprite:FlxSprite;
 		
+		public var invertFilter:FlxSprite;
 		
 		
 		override public function create():void
@@ -180,6 +184,7 @@ package
 			endingTextFields = new FlxGroup();
 			endingSprites = new FlxGroup();
 			invertGlows = new FlxGroup();
+			finalInvertGlowLayer = new FlxGroup();
 			
 			FlxG.playMusic(useAlternateMusic ? DayThemeLong : DayThemeLongSlow, MUSIC_VOLUME);
 			
@@ -192,8 +197,10 @@ package
 					endings[ending] = true;
 				}
 			}
-			
-			
+			if (save.data.inverted == true)
+			{
+				setupInvertFilter();
+			}
 			
 			world = new World(FlxG.width / 2, FlxG.height / 2);
 			add(world);
@@ -247,7 +254,10 @@ package
 			
 			add(invertGlows);
 			
+			add(finalInvertGlowLayer);
+			
 			add(darkness);
+			
 			
 			endingImage = new FlxSprite(0, 0, EndingSprite);
 			add(endingImage);
@@ -317,6 +327,9 @@ package
 			controlsSprite.scale.x = controlsSprite.scale.y = 4;
 			add(controlsSprite)
 			
+			//add(finalInvertGlowLayer);
+			
+			
 			
 		}
 		
@@ -344,7 +357,7 @@ package
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, "resign",END_RESIGN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SECRET_COLOR, "juxtapose",END_SECRET, world);
+			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, JUXTAPOSE_COLOR, "juxtapose",END_JUXTAPOSE, world);
 			endingSprites.add(sprite);
 			//end = new EndingSprite(
 		}
@@ -489,9 +502,9 @@ package
 				{
 					onWorship();
 				}
-				if (FlxG.keys.justPressed("G"))
+				if (FlxG.keys.justPressed("V"))
 				{
-					onWorship();
+					onJuxtapose();
 				}
 				if (FlxG.keys.justPressed("W"))
 				{
@@ -839,7 +852,7 @@ package
 					//gameSprites.add(crushPlant);
 					break;
 				case SECRET_PEDESTAL:
-					var secretPedestal:SecretPedestal = new SecretPedestal(worldX, worldY);
+					secretPedestal = new SecretPedestal(worldX, worldY);
 					lightOrbHolders.add(secretPedestal);
 					break;
 			}
@@ -962,9 +975,9 @@ package
 				
 				if (getMaxPlantGrowth() == Plant.MAX_GROWTH)
 				{
-					unlockEnding(END_SECRET);
+					/*unlockEnding(END_SECRET);
 					giveUpDarkness.fill(SECRET_COLOR);
-					waitingForSecret = true;
+					waitingForSecret = true;*/
 				}
 				else
 				{
@@ -1113,7 +1126,7 @@ package
 			FlxG.play(NPCDieSound, SFX_VOLUME);
 		}
 		
-		public const RESIGN_COLOR:uint = 0xff888888;
+		public const RESIGN_COLOR:uint = 0xffDA5302;//0xff888888;
 		public function onResign() : void
 		{
 			lastEndingColor = RESIGN_COLOR;
@@ -1153,9 +1166,12 @@ package
 		{
 			for each (var player:Player in players.members)
 			{
-				player.kneel();
-				player.play("kneel");
-				player.kneeling = true;
+				if (!player.kneeling)
+				{
+					player.kneel();
+					player.play("kneel");
+					player.kneeling = true;
+				}
 				
 				player.forceKneeling = true;
 			}
@@ -1188,6 +1204,43 @@ package
 		public function get isEligibleForMournEnd() : Boolean
 		{
 			return state == World.DARK && countLivingNpcs(World.DARK) == 0;
+		}
+		
+		public function get isEligibleForJuxtaposeEnd() : Boolean
+		{
+			return state == World.LIGHT && secretPedestal.canActivate;
+		}
+		
+		private function setupInvertFilter() : void
+		{
+			finalInvertGlowLayer.clear();
+			
+			invertFilter = new FlxSprite(0, 0);
+			invertFilter.makeGraphic(FlxG.width, FlxG.height);
+			invertFilter.blend = "invert";
+			finalInvertGlowLayer.add(invertFilter);
+		}
+		
+		public const JUXTAPOSE_COLOR:uint = 0xff888888;
+		public function onJuxtapose() : void
+		{
+			save.data.inverted = !save.data.inverted;
+			setupInvertFilter();
+			
+			var flickerTime:Number = 2;
+			invertFilter.flicker(flickerTime, 5);
+			
+			FlxG.shake(.004, flickerTime, function():void {
+				if (!save.data.inverted)
+				{
+					finalInvertGlowLayer.visible = false;
+				}
+				giveUpDarkness.fill(JUXTAPOSE_COLOR);
+				giveUpDarknessMaxAlpha = 1;
+				endingGame = true;
+				unlockEnding(END_JUXTAPOSE);
+				makePlayersKneel();
+				});
 		}
 		
 		public const WORSHIP_COLOR:uint = 0xffECC85E;
@@ -1225,7 +1278,8 @@ package
 			PlayState.instance.isEligibleForTendEnd ||
 			PlayState.instance.isEligibleForWorshipEnd ||
 			PlayState.instance.isEligibleForMournEnd ||
-			isEligibleForResignEnd;
+			isEligibleForResignEnd ||
+			isEligibleForJuxtaposeEnd;
 		}
 		
 		public function unlockEnding(ending:int) : void

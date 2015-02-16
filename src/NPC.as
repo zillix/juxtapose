@@ -121,7 +121,7 @@ package
 			}
 			
 			health--;
-			emitParticle(enemy.x, enemy.y, 10, true, 0xffff0000, 2, 0, 0, 1, 2);
+			emitParticle(enemy.x, enemy.y, 10, true, 0xffff0000, 2, 0, 0, 1, 3);
 			if (health <= 0)
 			{
 				setGameState(DEAD);
@@ -480,14 +480,14 @@ package
 			{
 				addText(quips,  "we have better uses for the orbs, but that tree calls to me...");
 			}
-			if (!hasEnding(PlayState.END_SECRET))
+			/*if (!hasEnding(PlayState.END_SECRET))
 			{
 				if (PlayState.instance.plants.members.length > 0)
 				{
 					addText(quips, "the flora here is fascinating. we should try to take a sample when we leave");
 					addText(quips, "if only we could see the fully-grown flora before we depart");
 				}
-			}
+			}*/
 				
 			
 			if (quips.length > 0 && Math.random() > .5)

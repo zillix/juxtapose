@@ -11,23 +11,24 @@ package
 	{
 		[Embed(source = "data/secretPedestal.png")]	public var SecretPedestalSprite:Class;
 		
-		private var DISAPPEAR_VELOCITY:int = -100;
+		private var DISAPPEAR_VELOCITY:int = -50;
 		private var REAPPEAR_VELOCITY:int = 100;
 		private var isDisappeared:Boolean = false;
 		
 		private var startPosition:FlxPoint;
 		
 		private var invertGlow:InvertGlow;
+		private var acceptedThisDay:Boolean = false;
 		
 		public function SecretPedestal(X:Number, Y:Number)
 		{
-			super(X, Y, World.LIGHT, 5);
+			super(X, Y, World.LIGHT, 4);
 			loadGraphic(SecretPedestalSprite);
-			offset.x = 0;
-			orbHeight = 86;
-			scale.x = 2;
-			scale.y = 2;
-			offset.y = height * 3 / 2;
+			offset.x = width / 2;
+			orbHeight = 66;
+			//scale.x = 2;
+			//scale.y = 2;
+			//offset.y = height * 3 / 2;
 			
 			startPosition = new FlxPoint(X, Y);
 			/*scale.x = scale.y = 2;
@@ -50,12 +51,19 @@ package
 			//FlxG.play(StatueSound, PlayState.SFX_VOLUME);
 		}
 		
+		override public function get canPlaceOrb() : Boolean
+		{
+			return super.canPlaceOrb && !acceptedThisDay;
+		}
+		
 		override public function addOrb(orb:Orb) : Boolean
 		{
 			var bool:Boolean = super.addOrb(orb);
 			if (bool)
 			{
+				acceptedThisDay = true;
 				invertGlow = new InvertGlow(x, y + (state == World.LIGHT ? -orbHeight : orbHeight));
+				invertGlow.pulse(orbs.length);
 				PlayState.instance.invertGlows.add(invertGlow);
 				orb.consume();
 			}
@@ -72,10 +80,26 @@ package
 		{
 			super.update();
 			
-			if (invertGlow != null && !invertGlow.alive)
+			if (invertGlow != null)
 			{
-				startDisappearing();
-				invertGlow = null;
+				if (!invertGlow.alive)
+				{
+					if (orbs.length < maxOrbs)
+					{
+						startDisappearing();
+						invertGlow = null;
+					}
+					else
+					{
+						invertGlow.revive();
+						invertGlow.radius = 50;
+					}
+				}
+				else
+				{
+					invertGlow.x = x;
+					invertGlow.y = y - orbHeight;
+				}
 			}
 			
 			if (velocity.y < 0 && y <= startPosition.y -height)
@@ -100,6 +124,7 @@ package
 		{
 			if (newState == World.LIGHT && isDisappeared)
 			{
+				acceptedThisDay = false;
 				startReappearing();
 			}
 		}
@@ -115,20 +140,6 @@ package
 			isDisappeared = false;
 		}
 		
-		
-		
-		/*override protected function arrangeOrbs() : void
-		{
-			for (var i:int = 0; i < orbs.length; i++)
-			{
-				var realOrb:Orb = orbs[i];
-				var orb:FlxPoint = orbPoints[i];
-				orb.x = x + ORB_OFFSET;
-				orb.y = y + (state == World.LIGHT ? -orbHeight : orbHeight);
-				realOrb.targetPoint = orb;
-			}
-		}*/
-		
 		/*override public function getHitbox() : Rectangle
 		{
 			var bounds:Rectangle = super.getHitbox();
@@ -136,48 +147,24 @@ package
 			return bounds;
 		}
 		*/
-		/*override public function getExamineText() : Vector.<PlayText>
+		override public function getExamineText() : Vector.<PlayText>
 		{
 			var text:Vector.<PlayText> = new Vector.<PlayText>();
-			var orbCount:int = PlayState.instance.getOrbCount(state);
-			var day:int = PlayState.instance.day;
-			
-			switch (seedsSpawned)
-			{
-				case 0:
-					addText(text, "a disturbing statue");
-					addText(text, "it looks like something would fit in its mouth");
-					break;
+			addText(text, "a strange lamp");
+			addText(text, "it sheds no light");
 					
-				case 1:
-					addText(text, "a strange statue");
-					break;
-					
-				case 2:
-					addText(text, "an elegant statue. it looks like it wants more orbs.");
-					break;
-					
-				case 3:
-					addText(text, "a sublime statue");
-					break;
-			}
 			
 			return text;
-		}*/
+		}
 		
 		override public function get canActivate() : Boolean 
 		{
-			/*if (PlayState.instance.isEligibleForWorshipEnd)
-			{
-				return true;
-			}*/
-			
-			return false;
+			return orbs.length == maxOrbs;
 		}
 		
-		override public function activate() : void { PlayState.instance.onWorship(); }
+		override public function activate() : void { PlayState.instance.onJuxtapose(); }
 		
-		override public function get activateString() : String { return "worship"; }
+		override public function get activateString() : String { return "juxtapose"; }
 		
 	}
 	

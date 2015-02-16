@@ -422,9 +422,15 @@ package org.flixel
 		 */
 		override public function draw():void
 		{
+			_framesAlive++;
+			
 			if(_flickerTimer != 0)
 			{
-				_flicker = !_flicker;
+				if (_framesAlive % _flickerFrequency == 0)
+				{
+					_flicker = !_flicker;
+				}
+				
 				if(_flicker)
 					return;
 			}

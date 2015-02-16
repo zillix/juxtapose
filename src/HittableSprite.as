@@ -25,7 +25,7 @@ package
 				return;
 			}
 			
-			emitParticle(gameSprite.x, gameSprite.y, 2);
+			emitParticle(gameSprite.x, gameSprite.y, 2, true, 0, 1, 0, 0, 0, 1.5);
 			
 			enemyHits++;
 			if (enemyHits >= enemyHitsToDamage)

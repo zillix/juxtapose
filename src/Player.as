@@ -134,7 +134,7 @@ package
 			
 			if (isActive)
 			{
-				if (FlxG.keys.justPressed("DOWN"))
+				if (FlxG.keys.justPressed("DOWN") && carriedOrb == null)
 				{
 					kneeling = true;
 					play("kneel");
@@ -175,7 +175,7 @@ package
 						{
 							tend();
 						}
-						else if (isHopeless)
+						else if (isHopeless && PlayState.instance.endingGame)
 						{
 							
 							{
@@ -261,6 +261,7 @@ package
 			if (!isImmobile)
 			{
 				play("stand");
+				
 				velocity.x = 0;
 			}
 		}
@@ -460,10 +461,16 @@ package
 		public function rise() : void
 		{
 			kneeling = false;
-			//if (kneelTime > KNEEL_TIME * 2 / 3)
+			
+			var kneelFrame:int = 0;
+			if (_curAnim.name == "kneel")
 			{
-				play("rise");
+				kneelFrame = _curFrame;
 			}
+			
+			play("rise");
+			_curFrame = _curAnim.frames.length - kneelFrame;
+			_curIndex = _curAnim.frames[_curFrame];
 			rising = true;
 			riseTime = RISE_TIME;
 		}

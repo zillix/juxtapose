@@ -35,20 +35,27 @@ package
 			super.update();
 			if (state == World.LIGHT)
 			{
-				if (y + velocity.y * FlxG.elapsed > PlayState.instance.world.y)
+				if (y + velocity.y * FlxG.elapsed > PlayState.instance.world.y - height)
 				{
-					y = PlayState.instance.world.y - scale.y;
+					y = PlayState.instance.world.y - height- scale.y;
 					velocity.x = 0;
 					velocity.y = 0;
+					angularVelocity = 0;
+					
+					acceleration.x = 0;
+					acceleration.y = 0;
 				}
 			}
 			if (state == World.DARK)
 			{
-				if (y  + velocity.y * FlxG.elapsed < PlayState.instance.world.y)
+				if (y  + velocity.y * FlxG.elapsed < PlayState.instance.world.y + height)
 				{
-					y = PlayState.instance.world.y + scale.y;
+					y = PlayState.instance.world.y + height + scale.y;
 					velocity.x = 0;
 					velocity.y = 0;
+					acceleration.x = 0;
+					angularVelocity = 0;
+					acceleration.y = 0;
 				}
 			}
 		}

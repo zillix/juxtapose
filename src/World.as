@@ -22,7 +22,7 @@ package
 		
 		public const ROTATE_SPEED:Number = 150;
 		public const END_ROTATE_SPEED:Number = 400;
-		public const SLOW_ROTATE_SPEED:Number = 50;
+		public const SLOW_ROTATE_SPEED:Number = 250; // 50
 		public var rotateSpeed:Number = 0;
 		public var maxSpeed:Number;
 		public const ROTATE_ACCELERATION:Number = 200;

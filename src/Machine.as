@@ -10,7 +10,7 @@ package
 	public class Machine extends OrbHolder 
 	{
 		[Embed(source = "data/machineSmall.png")]	public var MachineSprite:Class;
-		[Embed(source = "data/machineLight.png")]	public var MachineLightSprite:Class;
+		[Embed(source = "data/machineLightBW.png")]	public var MachineLightSprite:Class;
 		[Embed(source = "data/antenna.png")]	public var AntennaSprite:Class;
 		[Embed(source = "data/damage.mp3")]	public var DamageSound:Class;
 		[Embed(source = "data/deviceBroken.mp3")]	public var DeviceBrokenSound:Class;
@@ -156,6 +156,10 @@ package
 			for each (var orb:Orb in orbs)
 			{
 				orb.alpha = alpha;
+				if (orb.glow != null)
+				{
+					orb.glow.alpha = alpha;
+				}
 			}
 			
 			for each (var antenna:FlxSprite in antennae)

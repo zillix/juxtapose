@@ -136,6 +136,15 @@ package
 			consuming = true;
 		}
 		
+		override public function kill() : void
+		{
+			super.kill();
+			if (glow != null)
+			{
+				glow.kill();
+			}
+		}
+		
 	}
 	
 }

@@ -173,6 +173,8 @@ package org.flixel
 		 * scrollFactor is initialized as (1,1) by default.
 		 */
 		public var scrollFactor:FlxPoint;
+		
+		protected var _framesAlive:uint = 0;
 		/**
 		 * Internal helper used for retro-style flickering.
 		 */
@@ -181,6 +183,8 @@ package org.flixel
 		 * Internal helper used for retro-style flickering.
 		 */
 		protected var _flickerTimer:Number;
+		
+		protected var _flickerFrequency:int = 1;
 		/**
 		 * Handy for storing health percentage or armor points or whatever.
 		 */
@@ -838,9 +842,10 @@ package org.flixel
 		 * 
 		 * @param	Duration	How many seconds to flicker for.
 		 */
-		public function flicker(Duration:Number=1):void
+		public function flicker(Duration:Number=1, Frequency:int = 1):void
 		{
 			_flickerTimer = Duration;
+			_flickerFrequency = Frequency;
 			if(_flickerTimer == 0)
 				_flicker = false;
 		}

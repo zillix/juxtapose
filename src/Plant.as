@@ -10,7 +10,7 @@ package
 	 */
 	public class Plant extends HittableSprite
 	{
-		[Embed(source = "data/plant.png")]	public var PlantSprite:Class;
+		[Embed(source = "data/plantBW.png")]	public var PlantSprite:Class;
 		
 		public var growth:int = 1;
 		
