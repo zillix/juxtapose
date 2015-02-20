@@ -35,7 +35,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.02p";
+		public var version:String = "v1.04p";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -1185,9 +1185,9 @@ package
 		public function get isEligibleForBothEnd() : Boolean
 		{
 			return getMachine(World.LIGHT) &&
-			getMachine(World.LIGHT).charge == Machine.MAX_LIGHTS &&
+			getMachine(World.LIGHT).charge >= Machine.MAX_LIGHTS &&
 			getMachine(World.DARK) &&
-			getMachine(World.DARK).charge == Machine.MAX_LIGHTS;
+			getMachine(World.DARK).charge >= Machine.MAX_LIGHTS;
 			
 		}
 		
@@ -1198,7 +1198,7 @@ package
 		
 		public function get isEligibleForWorshipEnd() : Boolean
 		{
-			return state == World.LIGHT && feederTree && feederTree.seedsSpawned == Tower.STARTING_ORBS;
+			return state == World.LIGHT && feederTree && feederTree.orbsEaten == Tower.STARTING_ORBS;
 		}
 		
 		public function get isEligibleForMournEnd() : Boolean

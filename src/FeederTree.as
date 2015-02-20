@@ -9,18 +9,25 @@ package
 	 */
 	public class FeederTree extends OrbHolder 
 	{
-		[Embed(source = "data/feederTreeSmall.png")]	public var FeederTreeSprite:Class;
+		[Embed(source = "data/feederTreeSmall3.png")]	public var FeederTreeSprite:Class;
 		[Embed(source = "data/statue.mp3")]	public var StatueSound:Class;
 		
 		public static const MAX_SEEDS:int = 1;
 		public static const BONUS_SEEDS:int = 5;
 		public var ORB_OFFSET:int = 41;
 		public var seedsSpawned:int = 0;
+		public var orbsEaten:int = 0;
 		
 		public function FeederTree(X:Number, Y:Number)
 		{
 			super(X, Y,World.LIGHT, 102);
-			loadGraphic(FeederTreeSprite);
+			loadGraphic(FeederTreeSprite, true);
+			addAnimation("idle0", [0]);
+			addAnimation("idle1", [1]);
+			addAnimation("idle2", [2]);
+			addAnimation("idle3", [3]);
+			addAnimation("idle4", [4]);
+			play("idle0");
 			offset.x = 0;
 			orbHeight = 86;
 			scale.x = scale.y = 2;
@@ -40,6 +47,7 @@ package
 			if (bool)
 			{
 				orb.consume();
+				orbsEaten++;
 			}
 			
 			return bool;
@@ -58,6 +66,8 @@ package
 				if (!orbs[0].alive)
 				{
 					orbs.length = 0;
+					
+					play("idle" + orbsEaten);
 					if (seedsSpawned < MAX_SEEDS)
 					{
 						PlayState.instance.spawnSeed(seedsSpawned);
