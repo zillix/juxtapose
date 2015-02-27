@@ -35,7 +35,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.04p";
+		public var version:String = "v1.05p";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -106,8 +106,10 @@ package
 		public static const END_RESIGN:int = 6;
 		//public static const END_SECRET:int = 7;
 		public static const END_JUXTAPOSE:int = 7;
+		public static const END_SQUANDER:int = 8;
+		public static const END_SECRET:int = 9;
 		
-		public static const MAX_ENDINGS:int = 8;
+		public static const MAX_ENDINGS:int = 10;
 		
 		public var endingImage:FlxSprite;
 		
@@ -149,6 +151,10 @@ package
 		
 		public var titleText:GameText;
 		public var zillixText:GameText;
+		public var completeText:GameText;
+		public var versionText:GameText;
+		public var versionTimer:Number = 0;
+		public var VERSION_TIME:Number = 5;
 		
 		public var hasStartedGame:Boolean = false;
 		public var STARTING_ALPHA:Number = .6;
@@ -314,12 +320,28 @@ package
 			titleText.shadow = 0xff888888;
 			add(titleText);
 			
+			if (countEndings >= MAX_ENDINGS)
+			{
+				completeText = new GameText(World.BOTH, FlxG.width / 2, 120, 400, "*complete*", true);
+				completeText.setFormat("HACHEA", 10, 0xffffff, "center");
+				completeText.offset.x = completeText.width / 2;
+				completeText.shadow = 0xff888888;
+				add(completeText);
+			}
+			
 			
 			zillixText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height - 160, 100, "made by zillix", true);
 			zillixText.setFormat("HACHEA", 16, 0xffffff, "center");
 			zillixText.offset.x = zillixText.width / 2;
 			zillixText.shadow = 0xff888888;
 			add(zillixText);
+			
+			versionText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height - 100, 100, version, true);
+			versionText.setFormat("HACHEA", 10, 0xffffff, "center");
+			versionText.offset.x = versionText.width / 2;
+			versionText.shadow = 0xff888888;
+			add(versionText);
+			versionText.alpha = 0;
 			
 			controlsSprite = new FlxSprite(FlxG.width / 2, FlxG.height / 2 + 70, ArrowKeysSprite);
 			controlsSprite.offset.x = controlsSprite.width / 2;
@@ -351,15 +373,18 @@ package
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, "embark", END_EMBARK, world);
 			endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, "embark?", END_SECRET, world);
+			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, TEND_COLOR, "tend", END_TEND, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 5 - 90, endingDist, WORSHIP_COLOR, "worship", END_WORSHIP, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, "resign",END_RESIGN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, JUXTAPOSE_COLOR, "juxtapose",END_JUXTAPOSE, world);
+			//sprite = new EndSprite(angleFrac * 7 - 90, endingDist, JUXTAPOSE_COLOR, "juxtapose",END_JUXTAPOSE, world);
+			//endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, "squander", END_SQUANDER, world);
 			endingSprites.add(sprite);
-			//end = new EndingSprite(
 		}
 		
 		public static function toRadians(ang:Number):Number
@@ -461,14 +486,25 @@ package
 				}
 			}
 			
+			
 			if (hasStartedGame)
 			{
 				zillixText.alpha -= FlxG.elapsed;
 				titleText.alpha -= FlxG.elapsed;
 				controlsSprite.alpha -= FlxG.elapsed;
+				versionText.alpha -= FlxG.elapsed;
+				if (completeText != null)
+				{
+					completeText.alpha -= FlxG.elapsed;
+				}
 			}
 			else
 			{
+				versionTimer += FlxG.elapsed;
+				if (versionTimer >= VERSION_TIME)
+				{
+					versionText.alpha += FlxG.elapsed;
+				}
 				//titleText.angle = -world.worldAngle;
 			}
 			
@@ -523,6 +559,9 @@ package
 					unlockEnding(END_TEND);
 					unlockEnding(END_WORSHIP);
 					unlockEnding(END_RESIGN);
+					unlockEnding(END_SECRET);
+					unlockEnding(END_JUXTAPOSE);
+					unlockEnding(END_SQUANDER);
 				}
 				if (FlxG.keys.justPressed("Q"))
 				{
@@ -975,15 +1014,11 @@ package
 				
 				if (getMaxPlantGrowth() == Plant.MAX_GROWTH)
 				{
-					/*unlockEnding(END_SECRET);
-					giveUpDarkness.fill(SECRET_COLOR);
-					waitingForSecret = true;*/
+					waitingForSecret = true;
 				}
-				else
-				{
-					unlockEnding(END_EMBARK);
-					giveUpDarkness.fill(EMBARK_COLOR);
-				}
+				
+				unlockEnding(END_EMBARK);
+				giveUpDarkness.fill(EMBARK_COLOR);
 				//lastEndingColor = EMBARK_COLOR;
 			}
 			else
@@ -1117,12 +1152,14 @@ package
 			return max;
 		}
 		
-		public const GIVEUP_COLOR:uint = 0xff000000;
+		public const SQUANDER_COLOR:uint = 0xff888888;
 		public function onGiveUp() : void
 		{
+			lastEndingColor = SQUANDER_COLOR;
 			giveUpDarknessMaxAlpha = 1;
 			endingGame = true;
 			makePlayersKneel();
+			unlockEnding(END_SQUANDER);
 			FlxG.play(NPCDieSound, SFX_VOLUME);
 		}
 		

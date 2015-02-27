@@ -175,7 +175,7 @@ package
 						{
 							tend();
 						}
-						else if (isHopeless && PlayState.instance.endingGame)
+						else if (isHopeless)
 						{
 							
 							{
@@ -295,7 +295,7 @@ package
 			
 			if (isHopeless)
 			{	
-				return "give up";
+				return "squander";
 			}
 			
 			if (touchedOrbHolder != null)

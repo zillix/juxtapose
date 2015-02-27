@@ -10,6 +10,7 @@ package
 	public class SecretPedestal extends OrbHolder 
 	{
 		[Embed(source = "data/secretPedestal.png")]	public var SecretPedestalSprite:Class;
+		[Embed(source = "data/lampSound.mp3")]	public var LampSound:Class;
 		
 		private var DISAPPEAR_VELOCITY:int = -50;
 		private var REAPPEAR_VELOCITY:int = 100;
@@ -55,7 +56,7 @@ package
 		
 		override public function playPlacementSound() : void
 		{
-			//FlxG.play(StatueSound, PlayState.SFX_VOLUME);
+			FlxG.play(LampSound, PlayState.SFX_VOLUME);
 		}
 		
 		override public function get canPlaceOrb() : Boolean
@@ -159,8 +160,14 @@ package
 		override public function getExamineText() : Vector.<PlayText>
 		{
 			var text:Vector.<PlayText> = new Vector.<PlayText>();
-			addText(text, "a strange lamp");
-			addText(text, "it sheds no light");
+			if (orbs.length == 0)
+			{
+				addText(text, "a lamp that sheds no light");
+			}
+			else
+			{
+				addText(text, "a lamp that sheds strange light");
+			}
 					
 			
 			return text;
@@ -174,7 +181,7 @@ package
 		override public function activate() : void { 
 			PlayState.instance.onJuxtapose();
 			invertGlow.visible = false;
-			}
+		}
 		
 		override public function get activateString() : String { return "juxtapose"; }
 		

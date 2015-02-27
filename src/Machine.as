@@ -416,7 +416,7 @@ package
 			{
 				if (PlayState.instance.getMaxPlantGrowth() >= Plant.MAX_GROWTH)
 				{
-					return "juxtapose";
+					return "embark?";
 				}
 				return "embark";
 			}
