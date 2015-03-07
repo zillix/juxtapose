@@ -26,6 +26,8 @@ package
 				offset.y = 0;
 				angle = 180;
 			}
+			
+			this.antialiasing = true;
 		}
 		
 	
