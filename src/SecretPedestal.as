@@ -42,16 +42,6 @@ package
 			invertGlow = new InvertGlow(x, y + (state == World.LIGHT ? -orbHeight : orbHeight));
 			invertGlow.radius = 0;
 			PlayState.instance.invertGlows.add(invertGlow);
-				
-			
-			if (PlayState.instance.DEBUG)
-			{
-				visible = true;
-			}
-			else
-			{
-				visible = false;
-			}
 		}
 		
 		override public function playPlacementSound() : void
