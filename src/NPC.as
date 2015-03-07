@@ -20,12 +20,12 @@ package
 		
 		public static var IDLE:int = 0;
 		public static var WALK:int = 1;
-		public static var TALK:int = 2;
 		public static var HIDE:int = 3;
 		public static var COWER:int = 4;
 		public static var ESCAPE:int = 5;
 		public static var END:int = 6;
 		public static var DEAD:int = 7;
+		public static var TALKING:int = 8;
 		public var gameState:int = IDLE;
 		
 		
@@ -43,6 +43,8 @@ package
 		public var FADE_RATE:Number = 1;
 		
 		public var usesDefaultAnimations:Boolean = true;
+		
+		private var _lastExamineTextLength:int = 0;
 		
 		
 		public function NPC(X:Number, Y:Number, state:int)
@@ -149,6 +151,10 @@ package
 			
 			switch (newGameState)
 			{
+				case TALKING:
+					velocity.x = 0;
+					gameStateTime = 2 * _lastExamineTextLength;
+					break;
 				case IDLE:
 					gameStateTime = Math.random() * 1.5 + .5;
 					velocity.x = 0;
@@ -242,6 +248,12 @@ package
 			
 			switch (currentGameState)
 			{
+				case TALKING:
+					if (gameStateTime <= 0)
+					{
+						setGameState(WALK);
+					}
+					break;
 				case HIDE:
 					if (target != null)
 					{
@@ -315,9 +327,6 @@ package
 						setGameState(IDLE);
 					}
 				}
-				break;
-				
-			case TALK:
 				break;
 				
 			case DEAD:
@@ -495,7 +504,8 @@ package
 				text.push(quips[int(Math.random() * quips.length)]);
 			}
 			
-			
+			_lastExamineTextLength = text.length;
+			setGameState(TALKING);
 			
 			return text;
 		}
