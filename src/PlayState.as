@@ -9,6 +9,8 @@ package
 	import org.flixel.*;
 	import flash.utils.ByteArray;
 	import org.flixel.system.FlxTile;
+	
+	import com.newgrounds.API;
 
 	public class PlayState extends FlxState
 	{
@@ -35,11 +37,11 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.05p";
+		public var version:String = "v1.07n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
-		public var DEBUG:Boolean = true;
+		public var DEBUG:Boolean = false;
 		
 		public var PLACEMAP_SCALE:int = 20;
 		
@@ -359,31 +361,42 @@ package
 		public const FLEE_COLOR:uint = 0xffCDDA70;
 		public const EMBARK_COLOR:uint = 0xff0C6221;
 		public const SECRET_COLOR:uint = 0xffDA5302;
+		
+		public static const ABANDON_TEXT:String = "abandon";
+		public static const FLEE_TEXT:String = "flee";
+		public static const MOURN_TEXT:String = "mourn";
+		public static const EMBARK_TEXT:String = "embark";
+		public static const TEND_TEXT:String = "tend";
+		public static const WORSHIP_TEXT:String = "worship";
+		public static const RESIGN_TEXT:String = "resign";
+		public static const SQUANDER_TEXT:String = "squander";
+		public static const CATALYZE_TEXT:String = "catalyze";
+		public static const JUXTAPOSE_TEXT:String = "juxtapose";
 		public function createEndingSprites() : void
 		{
 			var sprite:EndSprite;
-			var endingCount:int = 8;
+			var endingCount:int = 10; //8;
 			var angleFrac:Number = 360 / endingCount;
 			var endingDist:Number = world.width / 2 + 60;
-			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, ABANDON_COLOR, "abandon", END_ABANDON, world);
+			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, ABANDON_COLOR, ABANDON_TEXT, END_ABANDON, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 1 - 90, endingDist, FLEE_COLOR, "flee", END_FLEE, world);
+			sprite = new EndSprite(angleFrac * 1 - 90, endingDist, FLEE_COLOR, FLEE_TEXT, END_FLEE, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, MOURN_COLOR, "mourn", END_MOURN, world);
+			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, MOURN_COLOR, MOURN_TEXT, END_MOURN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, "embark", END_EMBARK, world);
+			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, EMBARK_TEXT, END_EMBARK, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, "embark?", END_SECRET, world);
+			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, TEND_COLOR, TEND_TEXT, END_TEND, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, TEND_COLOR, "tend", END_TEND, world);
+			sprite = new EndSprite(angleFrac * 5 - 90, endingDist, WORSHIP_COLOR, WORSHIP_TEXT, END_WORSHIP, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 5 - 90, endingDist, WORSHIP_COLOR, "worship", END_WORSHIP, world);
+			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, RESIGN_TEXT, END_RESIGN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, "resign",END_RESIGN, world);
+			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, SQUANDER_TEXT, END_SQUANDER, world);
 			endingSprites.add(sprite);
-			//sprite = new EndSprite(angleFrac * 7 - 90, endingDist, JUXTAPOSE_COLOR, "juxtapose",END_JUXTAPOSE, world);
-			//endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, "squander", END_SQUANDER, world);
+			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, EMBARK_COLOR, CATALYZE_TEXT, END_SECRET, world);
+			endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 9 - 90, endingDist, JUXTAPOSE_COLOR, JUXTAPOSE_TEXT,END_JUXTAPOSE, world);
 			endingSprites.add(sprite);
 		}
 		
@@ -540,7 +553,7 @@ package
 				}
 				if (FlxG.keys.justPressed("V"))
 				{
-					onJuxtapose();
+					onMachineActivated(World.DARK);
 				}
 				if (FlxG.keys.justPressed("W"))
 				{
@@ -1153,13 +1166,22 @@ package
 		}
 		
 		public const SQUANDER_COLOR:uint = 0xff888888;
-		public function onGiveUp() : void
+		public function onSquander() : void
 		{
 			lastEndingColor = SQUANDER_COLOR;
 			giveUpDarknessMaxAlpha = 1;
 			endingGame = true;
 			makePlayersKneel();
 			unlockEnding(END_SQUANDER);
+			FlxG.play(NPCDieSound, SFX_VOLUME);
+		}
+		
+		public function onGiveUp() : void
+		{
+			lastEndingColor = SQUANDER_COLOR;
+			giveUpDarknessMaxAlpha = 1;
+			endingGame = true;
+			makePlayersKneel();
 			FlxG.play(NPCDieSound, SFX_VOLUME);
 		}
 		
@@ -1184,7 +1206,53 @@ package
 			FlxG.camera.stopFX();
 			world.setTargetEnding(getEnding(lastEndingUnlocked));
 			_shouldShowEndings = true;
+			
+			unlockEndingMedal(lastEndingUnlocked);
 			//FlxG.switchState(new PlayState);
+			
+			if ((countEndings == MAX_ENDINGS - 1
+				&& !endings[END_SECRET])
+				|| (countEndings == MAX_ENDINGS))
+			{
+				API.unlockMedal("resolve");
+			}
+		}
+		
+		private function unlockEndingMedal(ending:int) : void
+		{
+			switch (ending)
+			{
+				case END_TEND:
+					API.unlockMedal("tend");
+					break;
+				case END_RESIGN:
+					API.unlockMedal("resign");
+					break;
+				case END_EMBARK:
+					API.unlockMedal("embark");
+					break;
+				case END_SECRET:
+					API.unlockMedal("catalyze");
+					break;
+				case END_FLEE:
+					API.unlockMedal("flee");
+					break;
+				case END_JUXTAPOSE:
+					API.unlockMedal("juxtapose");
+					break;
+				case END_WORSHIP:
+					API.unlockMedal("worship");
+					break;
+				case END_SQUANDER:
+					API.unlockMedal("squander");
+					break;
+				case END_MOURN:
+					API.unlockMedal("mourn");
+					break;
+				case END_ABANDON:
+					API.unlockMedal("abandon");
+					break;
+			}
 		}
 		
 		public const TEND_COLOR:uint = 0xffFEBAD4;
@@ -1228,6 +1296,11 @@ package
 			
 		}
 		
+		public function get isEligibleForSquanderEnd() : Boolean
+		{
+			return PlayState.instance.getOrbCount(World.LIGHT) + PlayState.instance.getOrbCount(World.DARK) == 0;
+		}
+		
 		public function get isEligibleForResignEnd() : Boolean
 		{
 			return state == World.LIGHT && getMachine(World.LIGHT) && getMachine(World.LIGHT).crushed;
@@ -1258,7 +1331,7 @@ package
 			finalInvertGlowLayer.add(invertFilter);
 		}
 		
-		public const JUXTAPOSE_COLOR:uint = 0xff888888;
+		public const JUXTAPOSE_COLOR:uint = 0xffffffff;
 		public function onJuxtapose() : void
 		{
 			save.data.inverted = !save.data.inverted;
@@ -1340,7 +1413,7 @@ package
 				}
 			}
 			
-			return null;
+			return endingSprites.members[0];
 		}
 		
 		public function onRotatedToTargetEnding() : void

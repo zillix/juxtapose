@@ -1,7 +1,8 @@
 package {
 	import org.flixel.*;
 	[SWF(width="600", height="600", backgroundColor="#000000")]
-	[Frame(factoryClass="Preloader")]
+	//[Frame(factoryClass="Preloader")] // I'm not committing the NGPreloader. Reference this one instead
+	[Frame(factoryClass="NGPreloader")]
 	public class Main extends FlxGame
 	{
 		public function Main():void
