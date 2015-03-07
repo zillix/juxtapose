@@ -9,3 +9,5 @@ obj/StableBirdConfig.xml
 bin/LD30.swf
 bin/LD30.swf
 src/data/secretPedetal.png
+src/NGPreloader.as
+LD30.as3proj
