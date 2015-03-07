@@ -175,6 +175,10 @@ package
 						{
 							tend();
 						}
+						else if (PlayState.instance.isEligibleForSquanderEnd)
+						{
+							PlayState.instance.onSquander();
+						}
 						else if (isHopeless)
 						{
 							
@@ -290,12 +294,17 @@ package
 			
 			if (touchedPlant != null && touchedPlant.growth == Plant.MAX_GROWTH && PlayState.instance.isEligibleForTendEnd)
 			{
-				return "tend";
+				return PlayState.TEND_TEXT;
+			}
+			
+			if (PlayState.instance.isEligibleForSquanderEnd)
+			{	
+				return PlayState.SQUANDER_TEXT;
 			}
 			
 			if (isHopeless)
 			{	
-				return "squander";
+				return "give up";
 			}
 			
 			if (touchedOrbHolder != null)

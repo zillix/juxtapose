@@ -129,7 +129,7 @@ package
 			}
 		}
 		
-		public function get blocksFiends() : Boolean { return !(holder != null && (holder is Machine))};
+		public function get blocksFiends() : Boolean { return (holder != null)};
 		
 		public function consume() : void
 		{

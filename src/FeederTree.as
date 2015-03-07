@@ -146,7 +146,7 @@ package
 		
 		override public function activate() : void { PlayState.instance.onWorship(); }
 		
-		override public function get activateString() : String { return "worship"; }
+		override public function get activateString() : String { return PlayState.WORSHIP_TEXT }
 		
 	}
 	

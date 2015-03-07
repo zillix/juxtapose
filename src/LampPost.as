@@ -5,12 +5,10 @@ package
 	 * ...
 	 * @author zillix
 	 */
-	public class LampPost extends OrbHolder 
+	public class LampPost extends OrbHolderHideSpot 
 	{
 		[Embed(source = "data/lamppost.png")]	public var LampPostSprite:Class;
 		public static const LAMPPOST_NAME:String = "pillar";
-		
-		public var hidingNpcs:Vector.<NPC> = new Vector.<NPC>();
 		
 		public function LampPost(X:Number, Y:Number, S:int)
 		{
@@ -19,20 +17,6 @@ package
 			
 			//addOrb(new Orb(x, y));
 		}
-		
-		public function hideLock(npc:NPC) : void
-		{
-			hidingNpcs.push(npc);
-		}
-		
-		public function hideUnlock(npc:NPC) : void
-		{
-			if (hidingNpcs.indexOf(npc) > -1)
-			{
-				hidingNpcs.splice(hidingNpcs.indexOf(npc), 1);
-			}
-		}
-		
 		
 		override public function getExamineText() : Vector.<PlayText>
 		{

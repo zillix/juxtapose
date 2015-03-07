@@ -7,7 +7,7 @@ package
 	 * ...
 	 * @author zillix
 	 */
-	public class Machine extends OrbHolder 
+	public class Machine extends OrbHolderHideSpot 
 	{
 		[Embed(source = "data/machineSmall.png")]	public var MachineSprite:Class;
 		[Embed(source = "data/machineLightBW.png")]	public var MachineLightSprite:Class;
@@ -410,19 +410,19 @@ package
 		{
 			if (PlayState.instance.isEligibleForResignEnd)
 			{
-				return "resign";
+				return PlayState.RESIGN_TEXT;
 			}
 			if (PlayState.instance.isEligibleForBothEnd)
 			{
 				if (PlayState.instance.getMaxPlantGrowth() >= Plant.MAX_GROWTH)
 				{
-					return "embark?";
+					return PlayState.CATALYZE_TEXT;
 				}
-				return "embark";
+				return PlayState.EMBARK_TEXT;
 			}
 			else
 			{
-				return isLight ? "abandon" : "flee";
+				return isLight ? PlayState.ABANDON_TEXT : PlayState.FLEE_TEXT
 			}
 		}
 	}

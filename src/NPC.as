@@ -206,31 +206,31 @@ package
 				return null;
 			}
 			
-			var bestLampPost:LampPost;
+			var bestHideSpot:OrbHolderHideSpot;
 			var bestDistance:Number = Number.MAX_VALUE;
 			for each (var orbHolder:OrbHolder in PlayState.instance.darkOrbHolders.members)
 			{
-				var lampPost:LampPost = orbHolder as LampPost;
-				if (lampPost != null && lampPost.orbs.length > 0)
+				var hideSpot:OrbHolderHideSpot = orbHolder as OrbHolderHideSpot;
+				if (hideSpot != null && hideSpot.orbs.length > 0)
 				{
-					if (lampPost.hidingNpcs.length > 0)
+					if (hideSpot.hidingNpcs.length > 0)
 					{
 						continue;
 					}
 					
-					var distance:Number = Math.abs(lampPost.x - x);
+					var distance:Number = Math.abs(hideSpot.x - x);
 					if (distance < bestDistance)
 					{
-						bestLampPost = lampPost;
+						bestHideSpot = hideSpot;
 						bestDistance = distance;
 					}
 				}
 			}
 			
-			if (bestLampPost != null)
+			if (bestHideSpot != null)
 			{
-				bestLampPost.hideLock(this);
-				return bestLampPost;
+				bestHideSpot.hideLock(this);
+				return bestHideSpot;
 			}
 			
 			return getRandomTarget();
@@ -537,7 +537,7 @@ package
 		{
 			if (PlayState.instance.isEligibleForMournEnd && health == 0)
 			{
-				return "mourn";
+				return PlayState.MOURN_TEXT;
 			}
 			else
 			{
