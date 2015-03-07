@@ -3,9 +3,11 @@ package
 	import adobe.utils.CustomActions;
 	import flash.display.BitmapData;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.ui.Mouse;
 	import flash.utils.Dictionary;
+	import flash.display.StageDisplayState;
 	import org.flixel.*;
 	import flash.utils.ByteArray;
 	import org.flixel.system.FlxTile;
@@ -359,7 +361,7 @@ package
 		
 		public const ABANDON_COLOR:uint = 0xff160C62;
 		public const FLEE_COLOR:uint = 0xffCDDA70;
-		public const EMBARK_COLOR:uint = 0xff0C6221;
+		public const EMBARK_COLOR:uint = 0xff87CEEB;
 		public const SECRET_COLOR:uint = 0xffDA5302;
 		
 		public static const ABANDON_TEXT:String = "abandon";
@@ -378,26 +380,29 @@ package
 			var endingCount:int = 10; //8;
 			var angleFrac:Number = 360 / endingCount;
 			var endingDist:Number = world.width / 2 + 60;
-			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, ABANDON_COLOR, ABANDON_TEXT, END_ABANDON, world);
+			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, JUXTAPOSE_COLOR, JUXTAPOSE_TEXT,END_JUXTAPOSE, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 1 - 90, endingDist, FLEE_COLOR, FLEE_TEXT, END_FLEE, world);
-			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, MOURN_COLOR, MOURN_TEXT, END_MOURN, world);
+			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, ABANDON_COLOR, ABANDON_TEXT, END_ABANDON, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, EMBARK_TEXT, END_EMBARK, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, TEND_COLOR, TEND_TEXT, END_TEND, world);
+			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, FLEE_COLOR, FLEE_TEXT, END_FLEE, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 5 - 90, endingDist, WORSHIP_COLOR, WORSHIP_TEXT, END_WORSHIP, world);
+			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, MOURN_COLOR, MOURN_TEXT, END_MOURN, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, RESIGN_TEXT, END_RESIGN, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, SQUANDER_TEXT, END_SQUANDER, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, EMBARK_COLOR, CATALYZE_TEXT, END_SECRET, world);
+			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, SECRET_COLOR, CATALYZE_TEXT, END_SECRET, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 9 - 90, endingDist, JUXTAPOSE_COLOR, JUXTAPOSE_TEXT,END_JUXTAPOSE, world);
+			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, WORSHIP_COLOR, WORSHIP_TEXT, END_WORSHIP, world);
 			endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 9 - 90, endingDist, TEND_COLOR, TEND_TEXT, END_TEND, world);
+			endingSprites.add(sprite);
+			
+			
+			
 		}
 		
 		public static function toRadians(ang:Number):Number
@@ -598,6 +603,18 @@ package
 				restartGame();
 			}
 			
+			if (FlxG.keys.justPressed("F"))
+			{
+				if (FlxG.stage.displayState == StageDisplayState.NORMAL)
+				{
+					goFullScreen();
+				}
+				else
+				{
+					goNormalScreen();
+				}
+			}
+			
 			if (FlxG.keys.pressed("R"))
 			{
 				giveUpDarkness.alpha += .5 * FlxG.elapsed;
@@ -641,6 +658,19 @@ package
 			}
 			
 			tickClean();
+		}
+		
+		private function goFullScreen() : void
+		{
+			FlxG.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+			FlxG.stage.fullScreenSourceRect = new Rectangle(0,0,FlxG.width,FlxG.height); 
+    
+		}
+		
+		private function goNormalScreen() : void
+		{
+			FlxG.stage.displayState = StageDisplayState.NORMAL;
+			//FlxG.camera.getContainerSprite().x = 0;
 		}
 		
 		private function updateEnd() : void
