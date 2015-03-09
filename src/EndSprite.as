@@ -36,6 +36,7 @@ package
 			gameText.offset.x = gameText.width / 2;
 			gameText.fullShadow = 0xff000000;
 			gameText.angle = Angle + 90;
+			gameText.antialiasing = true;
 			PlayState.instance.endingTextFields.add(gameText);
 			
 			alpha = 0;
