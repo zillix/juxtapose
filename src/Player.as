@@ -137,7 +137,7 @@ package
 			if (isActive)
 			{
 				
-				if (touchedBeam != null)
+				if (touchedBeam != null && !PlayState.instance.isEligibleForTendEnd)
 				{
 					touchedBeam.charge();
 				}

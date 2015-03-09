@@ -40,11 +40,11 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.08n";
+		public var version:String = "v1.09n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
-		public var DEBUG:Boolean = true;
+		public var DEBUG:Boolean = false;
 		
 		public var PLACEMAP_SCALE:int = 20;
 		
@@ -168,7 +168,7 @@ package
 		public var VERSION_TIME:Number = 5;
 		
 		public var hasStartedGame:Boolean = false;
-		public var STARTING_ALPHA:Number = .6;
+		public var STARTING_ALPHA:Number = .85;
 		public var controlsSprite:FlxSprite;
 		
 		public var invertFilter:FlxSprite;
@@ -322,14 +322,15 @@ package
 			
 			giveUpDarkness = new FlxSprite(0, 0);
 			giveUpDarkness.makeGraphic(FlxG.width, FlxG.height, 0xff000000);
-			if (PlayState.playedOnce)
+			
+			/*if (PlayState.playedOnce)
 			{
 				giveUpDarkness.alpha = 1;
 			}
 			else
 			{
 				giveUpDarkness.alpha = 0;
-			}
+			}*/
 			add(giveUpDarkness);
 			
 			add(endingSprites);
@@ -342,7 +343,7 @@ package
 			
 			PlayState.playedOnce = true;
 			
-			titleText = new GameText(World.BOTH, FlxG.width / 2, 40, 400, "juxtapose", true);
+			titleText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height / 2 - 60, 400, "juxtapose", true);
 			titleText.setFormat("HACHEA", 40, 0xffffff, "center");
 			titleText.offset.x = titleText.width / 2;
 			titleText.shadow = 0xff888888;
@@ -612,6 +613,8 @@ package
 					unlockEnding(END_CATALYZE);
 					unlockEnding(END_JUXTAPOSE);
 					unlockEnding(END_SQUANDER);
+					unlockEnding(END_SOL);
+					unlockEnding(END_NYX);
 				}
 				if (FlxG.keys.justPressed("Q"))
 				{
@@ -1276,7 +1279,7 @@ package
 			FlxG.play(NPCDieSound, SFX_VOLUME);
 		}
 		
-		public const RESIGN_COLOR:uint = 0xffDA5302;//0xff888888;
+		public const RESIGN_COLOR:uint = 0xff1E1757;//0xff888888;
 		public function onResign() : void
 		{
 			lastEndingColor = RESIGN_COLOR;

@@ -118,7 +118,7 @@ package
 			FlxG.shake(.06, 2);
 			FlxG.flash(state == World.LIGHT ? 0xffffffff : 0xff000000, 
 				1, 
-				World.LIGHT ? 
+				state == World.LIGHT ? 
 					PlayState.instance.onSolEnd
 					: PlayState.instance.onNyxEnd);
 		}
