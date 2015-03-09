@@ -88,14 +88,6 @@ package
 				carriedOrb.targetPoint = carryPoint;
 			}
 			
-			if (PlayState.instance.DEBUG)
-			{
-				if (FlxG.keys.justPressed("F"))
-				{
-					WALK_SPEED *= 1.5;
-				}
-			}
-			
 			if (escaping && !isImmobile)
 			{
 				var escapeX:Number = PlayState.instance.world.x + World.ESCAPE_DISTANCE * .55;

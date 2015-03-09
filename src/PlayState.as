@@ -40,7 +40,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.09n";
+		public var version:String = "v1.10n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -188,6 +188,13 @@ package
 		{
 			instance = this;
 			FlxG.bgColor = 0xff000000;
+			
+			// handles fullscreen
+			var zKeyboard:ZKeyboard = new ZKeyboard();
+			zKeyboard.fullscreenCallback = goFullScreen;
+			zKeyboard.fullscreenName = "F";
+			FlxG.keys = zKeyboard;
+			
 			
 			super.create();
 			
@@ -638,17 +645,17 @@ package
 				restartGame();
 			}
 			
-			if (FlxG.keys.justPressed("F"))
+			/*if (FlxG.keys.justPressed("F"))
 			{
 				if (FlxG.stage.displayState == StageDisplayState.NORMAL)
 				{
 					goFullScreen();
 				}
-				else
+				/*else
 				{
 					goNormalScreen();
-				}
-			}
+				}*/
+			//}
 			
 			if (FlxG.keys.pressed("R"))
 			{

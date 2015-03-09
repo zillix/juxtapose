@@ -15,7 +15,7 @@ package org.flixel.system.input
 		/**
 		 * @private
 		 */
-		internal var _map:Array;
+		protected var _map:Array;
 		/**
 		 * @private
 		 */
