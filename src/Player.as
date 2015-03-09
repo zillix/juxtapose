@@ -19,6 +19,7 @@ package
 		public var touchedOrbHolder:OrbHolder;
 		public var touchedNPC:NPC;
 		public var touchedPlant:Plant;
+		public var touchedBeam:OrbBeam;
 		
 		public var textField:GameText;
 		public var textFieldAlpha:Number = 1;
@@ -130,10 +131,17 @@ package
 					rising = false;
 				}
 			}
+			
 				
 			
 			if (isActive)
 			{
+				
+				if (touchedBeam != null)
+				{
+					touchedBeam.charge();
+				}
+				
 				if (FlxG.keys.justPressed("DOWN") && carriedOrb == null)
 				{
 					kneeling = true;
@@ -175,7 +183,7 @@ package
 						{
 							tend();
 						}
-						else if (PlayState.instance.isEligibleForSquanderEnd)
+						else if (PlayState.instance.isEligibleForSquanderEnd && isHopeless)
 						{
 							PlayState.instance.onSquander();
 						}
@@ -219,9 +227,18 @@ package
 								didAction = false;
 							}
 							
+							
+							
+							if (!didAction && touchedBeam != null && touchedBeam.canExamine)
+							{
+								touchedBeam.examine();
+								didAction = true;
+							}
+							
 							if (!didAction && touchedNPC != null && touchedNPC.canExamine && canQueueText)
 							{
 								touchedNPC.examine();
+								didAction = true;
 							}
 						}
 					}
@@ -258,6 +275,7 @@ package
 			touchedOrbHolder = null;
 			touchedNPC = null;
 			touchedPlant = null;
+			touchedBeam = null;
 		}
 		
 		private function stand() : void
@@ -297,7 +315,7 @@ package
 				return PlayState.TEND_TEXT;
 			}
 			
-			if (PlayState.instance.isEligibleForSquanderEnd)
+			if (PlayState.instance.isEligibleForSquanderEnd && isHopeless)
 			{	
 				return PlayState.SQUANDER_TEXT;
 			}
@@ -329,6 +347,12 @@ package
 					return touchedOrbHolder.examineString;
 				}
 				
+			}
+			
+			
+			if (touchedBeam != null && touchedBeam.canExamine)
+			{
+				return touchedBeam.examineString;
 			}
 			
 			if (touchedNPC != null && touchedNPC.canExamine &&  canQueueText)

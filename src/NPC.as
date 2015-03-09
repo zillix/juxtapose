@@ -360,12 +360,22 @@ package
 			var blockQuips:Boolean = false;
 			var progressQuest:Boolean = false;
 			var player:Player = PlayState.instance.getMyPlayer(PlayState.instance.state);
+			var isInverted:Boolean = PlayState.instance.save.data.inverted;
 			if (isLight)
 			{
 				if (day == 0)
 				{
-					addText(text, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
-					addText(text, "hold DOWN to rest for the night");
+					if (!isInverted)
+					{
+						addText(text, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
+						addText(text, "hold DOWN to rest for the night");
+					}
+					else
+					{
+						addText(text, "something feels different... but I can't tell why");
+						addText(text, "everything seems wrong somehow");
+					}
+					
 					if (PlayState.instance.countEndings == 0)
 					{
 						blockQuips = true;
@@ -440,9 +450,18 @@ package
 			{
 				if (day == 0)
 				{
-					addText(text, "they will come again tonight");
-					addText(text, "only the light keeps them at bay");
-					blockQuips = true;
+					if (!isInverted)
+					{
+						addText(text, "they will come again tonight");
+						addText(text, "only the light keeps them at bay");
+						blockQuips = true;
+					}
+					else
+					{
+						addText(text, "I sense a strange power");
+						addText(text, "they fear the light, but now so do I");
+						blockQuips = true;
+					}
 				}
 				
 				
@@ -630,7 +649,7 @@ package
 					{
 						addText(text, "these orbs remind me of her", 1.5);
 						addText(text, "I wish I could see one closer...", 2);
-						addText(text, "I could make it something to remember her by", 2);
+						addText(text, "I could create something to remember her by", 2);
 					
 					}
 					break;

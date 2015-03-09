@@ -14,6 +14,7 @@ package
 		public var TEXT_FADE:Number = 1;
 		
 		public var fullShadow:uint = 0; 
+		public var fullShadowMagnitude:int = 1;
 		public var state:int = 0;
 		public function GameText(State:int, X:Number, Y:Number, Width:int, Text:String,EmbeddedFont:Boolean = true)
 		{
@@ -88,24 +89,24 @@ package
 				if (fullShadow > 0)
 				{
 					_textField.setTextFormat(new TextFormat(formatAdjusted.font,formatAdjusted.size,fullShadow,null,null,null,null,null,formatAdjusted.align));				
-					_matrix.translate(1, 1);
+					_matrix.translate(fullShadowMagnitude, fullShadowMagnitude);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(0, -1);
+					_matrix.translate(0, -fullShadowMagnitude);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(0, -1);
+					_matrix.translate(0, -fullShadowMagnitude);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate( -1, 0);
+					_matrix.translate( -fullShadowMagnitude, 0);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(-1, 0);
+					_matrix.translate(-fullShadowMagnitude, 0);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(0, 1);
+					_matrix.translate(0, fullShadowMagnitude);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(0, 1);
+					_matrix.translate(0, fullShadowMagnitude);
 					_pixels.draw(_textField, _matrix, _colorTransform);
-					_matrix.translate(1, 0);
+					_matrix.translate(fullShadowMagnitude, 0);
 					_pixels.draw(_textField, _matrix, _colorTransform);
 					
-					_matrix.translate(0,-1);
+					_matrix.translate(0,-fullShadowMagnitude);
 					_textField.setTextFormat(new TextFormat(formatAdjusted.font,formatAdjusted.size,formatAdjusted.color,null,null,null,null,null,formatAdjusted.align));
 				}
 				else if(_shadow > 0)

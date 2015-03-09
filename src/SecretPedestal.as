@@ -26,7 +26,7 @@ package
 		
 		public function SecretPedestal(X:Number, Y:Number)
 		{
-			super(X, Y, World.LIGHT, 4);
+			super(X, Y, World.LIGHT, 3);
 			loadGraphic(SecretPedestalSprite);
 			offset.x = width / 2;
 			orbHeight = 66;
@@ -35,6 +35,19 @@ package
 			//offset.y = height * 3 / 2;
 			
 			startPosition = new FlxPoint(X, Y);
+			
+			if (PlayState.escapedThisSession)
+			{
+				y -= height;
+				isDisappeared = true;
+				startReappearing();
+				PlayState.escapedThisSession = false;
+			}
+			else if (!PlayState.instance.escapedOnce)
+			{
+				y -= height;
+				isDisappeared = true;
+			}
 			/*scale.x = scale.y = 2;
 			offset.x = -width / 2;
 			offset.y = height * 3 / 2;
@@ -136,8 +149,11 @@ package
 		
 		private function startReappearing() : void
 		{
-			velocity.y = REAPPEAR_VELOCITY;
-			isDisappeared = false;
+			if (PlayState.instance.escapedOnce)
+			{
+				velocity.y = REAPPEAR_VELOCITY;
+				isDisappeared = false;
+			}
 		}
 		
 		/*override public function getHitbox() : Rectangle

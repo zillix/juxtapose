@@ -5,6 +5,7 @@ package
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
+	import flash.ui.ContextMenuClipboardItems;
 	import flash.ui.Mouse;
 	import flash.utils.Dictionary;
 	import flash.display.StageDisplayState;
@@ -39,11 +40,11 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.07n";
+		public var version:String = "v1.08n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
-		public var DEBUG:Boolean = false;
+		public var DEBUG:Boolean = true;
 		
 		public var PLACEMAP_SCALE:int = 20;
 		
@@ -87,12 +88,15 @@ package
 		public var emitters:FlxGroup;
 		public var gameSprites:FlxGroup;
 		public var textFields:FlxGroup;
-		public var endingTextFields:FlxGroup
+		public var endingTextFields:FlxGroup;
 		public var finalInvertGlowLayer:FlxGroup;
+		public var orbBeams:FlxGroup;
+		public var superSecretEnding:FlxGroup;
 		
 		public var textPlayer:TextPlayer;
 		
 		public var seedLocations:Vector.<FlxPoint> = new Vector.<FlxPoint>();
+		public var finalBeamLocations:Vector.<FlxPoint> = new Vector.<FlxPoint>();
 		
 		public var day:int = 0;
 		
@@ -113,8 +117,10 @@ package
 		public static const END_SQUANDER:int = 8;
 		public static const END_CATALYZE:int = 9;
 		public static const END_SOLACE:int = 10;
+		public static const END_SOL:int = 11;
+		public static const END_NYX:int = 12;
 		
-		public static const MAX_ENDINGS:int = 11;
+		public static const MAX_ENDINGS:int = 13;
 		
 		public var endingImage:FlxSprite;
 		
@@ -172,6 +178,11 @@ package
 		public static const SOLACE_COLOR_ORB:int = 2;
 		public static const SOLACE_PRESENT_ORB:int = 3;
 		
+		public var nyxBeam:OrbBeam;
+		public var solBeam:OrbBeam;
+		
+		public static var escapedThisSession:Boolean = false;
+		
 		
 		override public function create():void
 		{
@@ -201,6 +212,8 @@ package
 			endingSprites = new FlxGroup();
 			invertGlows = new FlxGroup();
 			finalInvertGlowLayer = new FlxGroup();
+			orbBeams = new FlxGroup();
+			superSecretEnding = new FlxGroup();
 			
 			FlxG.playMusic(useAlternateMusic ? DayThemeLong : DayThemeLongSlow, MUSIC_VOLUME);
 			
@@ -268,12 +281,14 @@ package
 			
 			add(fiends);
 			
+			add(orbBeams);
+			
 			add(invertGlows);
 			
 			add(finalInvertGlowLayer);
 			
-			add(darkness);
 			
+			add(darkness);
 			
 			endingImage = new FlxSprite(0, 0, EndingSprite);
 			add(endingImage);
@@ -285,6 +300,9 @@ package
 			darkCover.offset.y = darkCover.height / 2;
 			
 			add(darkCover);
+			
+			
+			add(superSecretEnding)
 			
 			// UI
 			
@@ -381,27 +399,29 @@ package
 		public static const CATALYZE_TEXT:String = "catalyze";
 		public static const JUXTAPOSE_TEXT:String = "juxtapose";
 		public static const SOLACE_TEXT:String = "solace";
+		public static const NYX_TEXT:String = "shroud";
+		public static const SOL_TEXT:String = "scorch";
 		public function createEndingSprites() : void
 		{
 			var sprite:EndSprite;
-			var endingCount:int = 11; //8;
+			var endingCount:int = 13; //8;
 			var angleFrac:Number = 360 / endingCount;
 			var endingDist:Number = world.width / 2 + 60;
 			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, JUXTAPOSE_COLOR, JUXTAPOSE_TEXT,END_JUXTAPOSE, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, ABANDON_COLOR, ABANDON_TEXT, END_ABANDON, world);
+			sprite = new EndSprite(angleFrac * 1 - 90, endingDist, ABANDON_COLOR, ABANDON_TEXT, END_ABANDON, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, EMBARK_COLOR, EMBARK_TEXT, END_EMBARK, world);
+			sprite = new EndSprite(angleFrac * 2 - 90, endingDist, EMBARK_COLOR, EMBARK_TEXT, END_EMBARK, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 3 - 90, endingDist, FLEE_COLOR, FLEE_TEXT, END_FLEE, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 4 - 90, endingDist, MOURN_COLOR, MOURN_TEXT, END_MOURN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, RESIGN_COLOR, RESIGN_TEXT, END_RESIGN, world);
+			sprite = new EndSprite(angleFrac * 5 - 90, endingDist, RESIGN_COLOR, RESIGN_TEXT, END_RESIGN, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, SQUANDER_TEXT, END_SQUANDER, world);
+			sprite = new EndSprite(angleFrac * 6 - 90, endingDist, SQUANDER_COLOR, SQUANDER_TEXT, END_SQUANDER, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, SECRET_COLOR, CATALYZE_TEXT, END_CATALYZE, world);
+			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SECRET_COLOR, CATALYZE_TEXT, END_CATALYZE, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, WORSHIP_COLOR, WORSHIP_TEXT, END_WORSHIP, world);
 			endingSprites.add(sprite);
@@ -409,7 +429,10 @@ package
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 10 - 90, endingDist, SOLACE_COLOR, SOLACE_TEXT, END_SOLACE, world);
 			endingSprites.add(sprite);
-			
+			sprite = new EndSprite(angleFrac * 11 - 90, endingDist, SOL_COLOR, SOL_TEXT, END_SOL, world);
+			endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 12 - 90, endingDist, NYX_COLOR, NYX_TEXT, END_NYX, world);
+			endingSprites.add(sprite);
 			
 			
 		}
@@ -482,7 +505,7 @@ package
 			checkHolderOverlap(lightPlayer, lightOrbHolders);
 			checkNPCOverlap(players, npcs);
 			checkPlantOverlap(players, plants);
-			
+			checkBeamOverlap(players, orbBeams);
 			
 			textPlayer.update();
 			lightText.text = textPlayer.currentText;
@@ -603,7 +626,7 @@ package
 				}
 				if (FlxG.keys.justPressed("E"))
 				{
-					triggerSecret();
+					triggerNyxEnding();
 				}
 			}
 			
@@ -788,6 +811,20 @@ package
 			}
 		}
 		
+		private function checkBeamOverlap(players:FlxGroup, group:FlxGroup) : void
+		{
+			for each (var player:Player in players.members)
+			{
+				for each (var beam:OrbBeam in group.members)
+				{
+					if (player.simpleOverlapCheck(beam) && !beam.disappear)
+					{
+						player.touchedBeam = beam;
+					}
+				}
+			}
+		}
+		
 		private function tickClean() : void
 		{
 			cleanTime -= FlxG.elapsed;
@@ -802,6 +839,7 @@ package
 				cleanGroup(darkOrbHolders);
 				cleanGroup(lightOrbHolders);
 				cleanGroup(invertGlows);
+				cleanGroup(orbBeams);
 			}
 		}
 		
@@ -876,6 +914,7 @@ package
 		private static const SEED_LOCATION:uint = 0x994344;
 		private static const CRUSH_PLANT:uint = 0x02DA37;
 		private static const SECRET_PEDESTAL:uint = 0x7F8582;
+		private static const FINAL_BEAM:uint = 0xFEBAEE;
 		private function processMapPixel(color:uint, column:int, row:int, scale:int, bitmapWidth:int, bitmapHeight:int) : void
 		{
 			// if it's in the light half, we want to bottom-justify it
@@ -945,6 +984,9 @@ package
 				case SECRET_PEDESTAL:
 					secretPedestal = new SecretPedestal(worldX, worldY);
 					lightOrbHolders.add(secretPedestal);
+					break;
+				case FINAL_BEAM:
+					finalBeamLocations.push(new FlxPoint(worldX, worldY));
 					break;
 			}
 			
@@ -1033,6 +1075,16 @@ package
 			var plant:Plant = new Plant(X, world.y);
 			plants.add(plant);
 			FlxG.play(PlantLandSound, SFX_VOLUME);
+			
+			if (isInverted)
+			{
+				var beam:OrbBeam = new OrbBeam(plant.x - 5, plant.y, World.LIGHT);
+				orbBeams.add(beam);
+				
+				solBeam = new OrbBeam(plant.x - 5, plant.y, World.LIGHT, false);
+				solBeam.charges = true;
+				orbBeams.add(solBeam);
+			}
 		}
 		
 		public function onMachineActivated(endState:int) : void
@@ -1307,7 +1359,7 @@ package
 			}
 		}
 		
-		public const TEND_COLOR:uint = 0xffFEBAD4;
+		public const TEND_COLOR:uint = 0xff016D44;
 		public function onTend() : void
 		{
 			lastEndingColor = RESIGN_COLOR;
@@ -1315,7 +1367,7 @@ package
 			giveUpDarknessMaxAlpha = 1;	
 			unlockEnding(END_TEND);
 			endingGame = true;
-		makePlayersKneel();
+			makePlayersKneel();
 			//world.setTargetEnding(getEnding(END_TEND));
 		}
 		
@@ -1387,6 +1439,16 @@ package
 		public function get isEligibleForJuxtaposeEnd() : Boolean
 		{
 			return state == World.LIGHT && secretPedestal.canActivate;
+		}
+		
+		public function get isEligibleForNyxEnd() : Boolean
+		{
+			return nyxBeam != null;
+		}
+		
+		public function get isEligibleForSolEnd() : Boolean
+		{
+			return solBeam != null && solBeam.isFullyCharged;
 		}
 		
 		private function setupInvertFilter() : void
@@ -1463,8 +1525,77 @@ package
 			isEligibleForSolaceEnd;
 		}
 		
+		public function triggerNyxBeam() : void
+		{
+			if (nyxBeam != null)
+			{
+				return;
+			}
+			
+			var nyxPoint:FlxPoint = null;
+			for each (var point:FlxPoint in finalBeamLocations)
+			{
+				if (point.y >= FlxG.height / 2)
+				{
+					nyxPoint = point;
+					break;
+				}
+			}
+			
+			if (nyxPoint != null)
+			{
+				nyxBeam = new OrbBeam(nyxPoint.x, FlxG.height / 2, World.DARK, false);
+				orbBeams.add(nyxBeam)
+			}
+		}
+		
+		public function triggerNyxEnding() : void
+		{
+			var ending:SuperSecretEndSprite = new SuperSecretEndSprite(World.DARK);
+			superSecretEnding.add(ending);
+		}
+		
+		public const NYX_COLOR:uint = 0xff222222;
+		public function onNyxEnd() : void
+		{
+			giveUpDarkness.fill(NYX_COLOR);
+			giveUpDarknessMaxAlpha = 1;
+			endingGame = true;
+			unlockEnding(END_NYX);
+			makePlayersKneel();
+		}
+		
+		public function triggerSolEnding() : void
+		{
+			var ending:SuperSecretEndSprite = new SuperSecretEndSprite(World.LIGHT);
+			superSecretEnding.add(ending);
+		}
+		
+		public const SOL_COLOR:uint = 0xffCCCCCC;
+		public function onSolEnd() : void
+		{
+			giveUpDarkness.fill(SOL_COLOR);
+			giveUpDarknessMaxAlpha = 1;
+			endingGame = true;
+			unlockEnding(END_SOL);
+			makePlayersKneel();
+		}
+		
 		public function unlockEnding(ending:int) : void
 		{
+			if (!endings[ending] && !save.data.escapedOnce)
+			{
+				switch (ending)
+				{
+					case END_ABANDON:
+					case END_FLEE:
+					case END_EMBARK:
+					case END_CATALYZE:
+						save.data.escapedOnce = true;
+						PlayState.escapedThisSession = true;
+						break;
+				}
+			}
 			endings[ending] = true;
 			lastEndingUnlocked = ending;
 			if (save.data.endings == null)
@@ -1572,6 +1703,16 @@ package
 					
 				}
 			}
+		}
+		
+		public function get isInverted() : Boolean
+		{
+			return save.data.inverted;
+		}
+		
+		public function get escapedOnce() : Boolean
+		{
+			return save.data.escapedOnce;
 		}
 	}
 }
