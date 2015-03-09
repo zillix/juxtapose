@@ -13,6 +13,9 @@ package
 	{
 		[Embed(source = "data/npcSmall.png")]	public var SmallNpcSprite:Class;
 		[Embed(source = "data/npcDie.mp3")]	public var NPCDieSound:Class;
+		[Embed(source = "data/solaceOrbSound.mp3")]	public var SolaceOrbSound:Class;
+		[Embed(source = "data/gameRestarted.mp3")]	public var MadeSolaceableSound:Class;
+		
 			
 		public static const MAX_HEALTH:int = 3;
 		
@@ -45,6 +48,9 @@ package
 		public var usesDefaultAnimations:Boolean = true;
 		
 		private var _lastExamineTextLength:int = 0;
+		
+		public var timesTalkedToday:int = 0;
+		public var solaceable:Boolean = false;
 		
 		
 		public function NPC(X:Number, Y:Number, state:int)
@@ -351,36 +357,27 @@ package
 			var plants:int = PlayState.instance.plants.members.length;
 			var maxPlantGrowth:int = PlayState.instance.getMaxPlantGrowth();
 			var deviceCharge:int = PlayState.instance.getMachine(state).charge;
+			var blockQuips:Boolean = false;
+			var progressQuest:Boolean = false;
+			var player:Player = PlayState.instance.getMyPlayer(PlayState.instance.state);
 			if (isLight)
 			{
-				if (id == 0)
+				if (day == 0)
 				{
-					if (orbCount == 0)
+					addText(text, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
+					addText(text, "hold DOWN to rest for the night");
+					if (PlayState.instance.countEndings == 0)
 					{
-						addText(quips, "how did it come to this?");
+						blockQuips = true;
 					}
-					else
-					{
-						addText(text, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
-						addText(text, "hold DOWN to rest for the night");
-					}
-					
-					
 				}
-				else if (id == 1)
+				else
 				{
-					if (day == 0)
+					addText(quips, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
+					addText(quips, "the falling rocks will soon destroy the " + Machine.MACHINE_NAME);
+					if (PlayState.instance.getOrbCount(World.DARK) > 0)
 					{
-						addText(text, "we don't have much time");
-						addText(text, "the loose rocks will destroy the " + Machine.MACHINE_NAME + " in a matter of days");
-					}
-					if (day >= 1)
-					{
-						addText(quips, "the falling rocks will soon destroy the " + Machine.MACHINE_NAME);
-						if (PlayState.instance.getOrbCount(World.DARK) > 0)
-						{
-							addText(quips, "why are there fewer " + Orb.ORB_NAME_PLURAL + " than yesterday?");
-						}
+						addText(quips, "where are the " + Orb.ORB_NAME_PLURAL + " disappearing to?");
 					}
 				}
 				
@@ -389,37 +386,67 @@ package
 					switch (maxPlantGrowth)
 					{
 						case 0:
-							addText(quips, "why have the sprouts died?   what did we do wrong?", 4);
 							break;
 						case 1:
+							if (!hasEnding(PlayState.END_CATALYZE)
+								|| !hasEnding(PlayState.END_TEND))
+							{
+							addText(quips, "I wonder what that sapling will grow into...", 4);
+							}
 							break;
+							
 						case 2:
 						case 3:
+							if (!hasEnding(PlayState.END_CATALYZE))
+							{	
+								addText(quips, "I wish I could bring a sample of that tree with me", 4);
+							}
 							break;
 						case 4:
+							if (!hasEnding(PlayState.END_CATALYZE))
+							{
+								addText(quips, "I wonder how the tree's fruit would fare in the desert?", 4);
+							}
 							break;
+					}
+				}
+					
+				
+				if (PlayState.instance.countEndings >= 4)
+				{
+					if (!hasEnding(PlayState.END_WORSHIP))
+					{
+						addText(quips,  "we have better uses for the orbs, but that tree calls to me...");
+					}
+					if (!hasEnding(PlayState.END_RESIGN))
+					{
+						addText(quips,  "if all of the antennae on the " + Machine.MACHINE_NAME + " break, we'll be trapped");
+					}
+					if (!hasEnding(PlayState.END_TEND))
+					{
+						addText(quips, "this wouldn't be so bad with a garden to care for");
+					}
+					if (!hasEnding(PlayState.END_SQUANDER))
+					{
+						addText(quips, "what would we do if we ran out of orbs?");
+					}
+					if (!hasEnding(PlayState.END_JUXTAPOSE))
+					{
+						addText(quips, "what does that hanging lamp do?");
 					}
 				}
 			}
 			else
 			{
-				if (id == 0)
-				{
-					if (orbCount == 0)
-					{
-						addText(quips, "there is nothing we can do");
-					}
-					else if (day < 2)
-					{
-						addText(text, "they will come again tonight");
-						addText(text, "they will stay away from the light");
-					}
-				}
-				else if (id == 1)
+				if (day == 0)
 				{
 					addText(text, "they will come again tonight");
-					addText(quips, "we need to get out of here");
+					addText(text, "only the light keeps them at bay");
+					blockQuips = true;
 				}
+				
+				
+				addText(quips, "we need to get out of here");
 				
 				if (health == 1)
 				{
@@ -439,9 +466,6 @@ package
 				{
 					switch (maxPlantGrowth)
 					{
-						case 0:
-							addText(quips, "not even the vines could survive this");
-							break;
 						case 1:
 							addText(quips, "where did these vines come from?");
 							break;
@@ -453,6 +477,12 @@ package
 							addText(quips, "even in this hell, the vines managed to flourish");
 							break;
 					}
+				}
+				
+				
+				if (!hasEnding(PlayState.END_MOURN))
+				{
+					addText(quips,  "if I don't make it through the night, you'll be all alone");
 				}
 			}
 			
@@ -473,22 +503,7 @@ package
 				addText(quips, "this seems... familiar somehow. have I been here before?");
 			}
 			
-			if (!hasEnding(PlayState.END_TEND))
-			{
-				addText(quips, "this wouldn't be so bad with a garden to care for");
-			}
-			if (!hasEnding(PlayState.END_RESIGN) && isLight)
-			{
-				addText(quips,  "if all of the antennae on the " + Machine.MACHINE_NAME + " break, we'll be trapped");
-			}
-			if (!hasEnding(PlayState.END_MOURN) && isDark)
-			{
-				addText(quips,  "if we don't make it through the night, you'll be all alone");
-			}
-			if (!hasEnding(PlayState.END_WORSHIP) && isLight)
-			{
-				addText(quips,  "we have better uses for the orbs, but that tree calls to me...");
-			}
+			
 			/*if (!hasEnding(PlayState.END_SECRET))
 			{
 				if (PlayState.instance.plants.members.length > 0)
@@ -497,9 +512,68 @@ package
 					addText(quips, "if only we could see the fully-grown flora before we depart");
 				}
 			}*/
+			
+			
+				
+			// SolaceQuest stuff
+			if (timesTalkedToday == 1)
+			{
+				progressQuest = false;
+				text.length = 0;
+				blockQuips = true;
+				
+				progressQuest = addSolaceText(text);
+						
+				if (progressQuest)
+				{
+					PlayState.instance.solaceQuestProgress++;
+				}
+			}
+			if (PlayState.instance.solaceQuestProgress == PlayState.SOLACE_COLOR_ORB
+				&& PlayState.instance.state == PlayState.instance.solaceQuestStartState)
+			{
+				if (playerHoldingSolaceColoredOrb)
+				{
+					text.length = 0;
+					blockQuips = true;
+					addText(text, "I won't forget her", -2, 
+						function() : void {
+							PlayState.instance.solaceQuestProgress++;
+							FlxG.play(SolaceOrbSound, PlayState.SFX_VOLUME);
+							FlxG.flash(PlayState.instance.SOLACE_COLOR, 1, function() : void {
+									player.carriedOrb.makeSolaceColored();
+								}
+							);
+						}
+					);
+					
+				}
+				
+			}
+			
+			if (PlayState.instance.solaceQuestProgress == PlayState.SOLACE_PRESENT_ORB
+				&& PlayState.instance.state != PlayState.instance.solaceQuestStartState)
+			{
+				if (playerHoldingSolaceColoredOrb)
+				{
+					text.length = 0;
+					blockQuips = true;
+					addText(text, "where did you get that orb?");
+					addText(text, "she knew it was my favorite color...");
+					addText(text, "I choose to believe we'll someday be reunited", -1, 
+						function () : void
+						{
+							PlayState.instance.solaceQuestProgress++;
+							makeSolaceable();
+						}
+					);
+				}
+			}
+			
 				
 			
-			if (quips.length > 0 && Math.random() > .5)
+			if (!blockQuips 
+				&& quips.length > 0 && Math.random() > .5)
 			{
 				text.push(quips[int(Math.random() * quips.length)]);
 			}
@@ -507,7 +581,74 @@ package
 			_lastExamineTextLength = text.length;
 			setGameState(TALKING);
 			
+			timesTalkedToday++;
+			
 			return text;
+		}
+		
+		private function makeSolaceable() : void
+		{
+			solaceable = true;
+			FlxG.play(MadeSolaceableSound, PlayState.SFX_VOLUME);
+		}
+		
+		private function addSolaceText(text:Vector.<PlayText>) : Boolean
+		{
+			var progressQuest:Boolean = false;
+			var solaceStartState:int = PlayState.instance.solaceQuestStartState;
+			var currentState:int = PlayState.instance.state;
+			switch (PlayState.instance.solaceQuestProgress)
+			{
+				case 0:
+					// Dude 1
+					addText(text, "we traveled here together...");
+					addText(text, "where is she now? she should be here...");
+					progressQuest = true;
+					PlayState.instance.solaceQuestStartState = PlayState.instance.state;
+					break;
+				case 1:
+					// Dude 2
+					if (solaceStartState != currentState)
+					{
+						addText(text, "she said we would both make it here");
+						addText(text, "I wish I knew if she was still alive");
+						progressQuest = true;
+					}
+					else // Dude 1
+					{
+						addText(text, "where did she go...?");
+					}
+					
+					break;
+				case 2:
+					// Dude 1
+					if (solaceStartState != currentState)
+					{
+						addText(text, "I wish I knew if she was still alive");	
+					}
+					else // Dude 2
+					{
+						addText(text, "these orbs remind me of her", 1.5);
+						addText(text, "I wish I could see one closer...", 2);
+						addText(text, "I could make it something to remember her by", 2);
+					
+					}
+					break;
+				case 3:
+					// Dude 2
+					if (solaceStartState != currentState)
+					{
+						addText(text, "these orbs remind me of her", 1.5);
+					}
+					else // Dude 1
+					{
+						addText(text, "she always loved that color...");
+					}
+					break;
+			}
+			
+			return progressQuest;
+			
 		}
 		
 		
@@ -524,11 +665,14 @@ package
 			{
 				setGameState(HIDE);
 			}
+		
+			timesTalkedToday = 0;
 		}
 		
 		override public function get canExamine() : Boolean
 		{
-			return super.canExamine || (PlayState.instance.isEligibleForMournEnd && health == 0);
+			return super.canExamine || (PlayState.instance.isEligibleForMournEnd && health == 0)
+			|| solaceable;
 		}
 		
 		override public function examine() : void
@@ -536,6 +680,10 @@ package
 			if (PlayState.instance.isEligibleForMournEnd && health == 0)
 			{
 				PlayState.instance.onMourn();
+			}
+			else if (solaceable)
+			{
+				PlayState.instance.onSolace();
 			}
 			else
 			{
@@ -549,15 +697,32 @@ package
 			{
 				return PlayState.MOURN_TEXT;
 			}
-			else
+			if (solaceable)
 			{
-				return "talk";
+				return PlayState.SOLACE_TEXT;
 			}
+			if (playerHoldingSolaceColoredOrb)
+			{
+				return "show";
+			}
+			
+			
+			return "talk";
 		}
 		
 		public function hasEnding(ending:int) : Boolean
 		{
 			return PlayState.instance.endings[ending];
+		}
+		
+		public function get playerHoldingSolaceColoredOrb() : Boolean
+		{
+			var player:Player = PlayState.instance.getMyPlayer(PlayState.instance.state);
+			return player.carriedOrb != null
+					&& ((player.carriedOrb.solaceColored
+							&& PlayState.instance.solaceQuestStartState != PlayState.instance.state)
+						|| (!player.carriedOrb.solaceColored
+							&& PlayState.instance.solaceQuestStartState == PlayState.instance.state));
 		}
 		
 	}

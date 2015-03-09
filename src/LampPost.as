@@ -23,7 +23,7 @@ package
 			var text:Vector.<PlayText> = new Vector.<PlayText>();
 			var day:int = PlayState.instance.day;
 			
-			addText(text, "a " + LAMPPOST_NAME);
+			addText(text, "a " + LAMPPOST_NAME, 1.5);
 			addText(text, "it can hold " + Orb.ORB_ARTICLE + " " + Orb.ORB_NAME);
 			
 			return text;

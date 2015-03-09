@@ -38,6 +38,8 @@ package
 		public var targetPoint:FlxPoint;
 		public var FLY_SPEED:Number = 150;
 		
+		public var solaceColored:Boolean = false;
+		
 		public function Orb(X:Number, Y:Number)
 		{
 			super(X, Y);
@@ -143,6 +145,12 @@ package
 			{
 				glow.kill();
 			}
+		}
+		
+		public function makeSolaceColored() : void
+		{
+			solaceColored = true;
+			color = PlayState.instance.SOLACE_COLOR;
 		}
 		
 	}

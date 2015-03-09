@@ -111,9 +111,10 @@ package
 		//public static const END_SECRET:int = 7;
 		public static const END_JUXTAPOSE:int = 7;
 		public static const END_SQUANDER:int = 8;
-		public static const END_SECRET:int = 9;
+		public static const END_CATALYZE:int = 9;
+		public static const END_SOLACE:int = 10;
 		
-		public static const MAX_ENDINGS:int = 10;
+		public static const MAX_ENDINGS:int = 11;
 		
 		public var endingImage:FlxSprite;
 		
@@ -165,6 +166,11 @@ package
 		public var controlsSprite:FlxSprite;
 		
 		public var invertFilter:FlxSprite;
+		
+		public var solaceQuestProgress:int = 0;
+		public var solaceQuestStartState:int = -1;
+		public static const SOLACE_COLOR_ORB:int = 2;
+		public static const SOLACE_PRESENT_ORB:int = 3;
 		
 		
 		override public function create():void
@@ -374,10 +380,11 @@ package
 		public static const SQUANDER_TEXT:String = "squander";
 		public static const CATALYZE_TEXT:String = "catalyze";
 		public static const JUXTAPOSE_TEXT:String = "juxtapose";
+		public static const SOLACE_TEXT:String = "solace";
 		public function createEndingSprites() : void
 		{
 			var sprite:EndSprite;
-			var endingCount:int = 10; //8;
+			var endingCount:int = 11; //8;
 			var angleFrac:Number = 360 / endingCount;
 			var endingDist:Number = world.width / 2 + 60;
 			sprite = new EndSprite(angleFrac * 0 - 90, endingDist, JUXTAPOSE_COLOR, JUXTAPOSE_TEXT,END_JUXTAPOSE, world);
@@ -394,11 +401,13 @@ package
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 7 - 90, endingDist, SQUANDER_COLOR, SQUANDER_TEXT, END_SQUANDER, world);
 			endingSprites.add(sprite);
-			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, SECRET_COLOR, CATALYZE_TEXT, END_SECRET, world);
+			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, SECRET_COLOR, CATALYZE_TEXT, END_CATALYZE, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 8 - 90, endingDist, WORSHIP_COLOR, WORSHIP_TEXT, END_WORSHIP, world);
 			endingSprites.add(sprite);
 			sprite = new EndSprite(angleFrac * 9 - 90, endingDist, TEND_COLOR, TEND_TEXT, END_TEND, world);
+			endingSprites.add(sprite);
+			sprite = new EndSprite(angleFrac * 10 - 90, endingDist, SOLACE_COLOR, SOLACE_TEXT, END_SOLACE, world);
 			endingSprites.add(sprite);
 			
 			
@@ -577,7 +586,7 @@ package
 					unlockEnding(END_TEND);
 					unlockEnding(END_WORSHIP);
 					unlockEnding(END_RESIGN);
-					unlockEnding(END_SECRET);
+					unlockEnding(END_CATALYZE);
 					unlockEnding(END_JUXTAPOSE);
 					unlockEnding(END_SQUANDER);
 				}
@@ -1227,6 +1236,19 @@ package
 			//world.setTargetEnding(getEnding(END_RESIGN));
 		}
 		
+		public const SOLACE_COLOR:uint = 0xffFEBAD4;//0xff888888;
+		public function onSolace() : void
+		{
+			lastEndingColor = SOLACE_COLOR;
+			giveUpDarkness.fill(SOLACE_COLOR);
+			giveUpDarknessMaxAlpha = 1;
+			unlockEnding(END_SOLACE);
+			endingGame = true;
+			makePlayersKneel();
+			FlxG.play(NPCDieSound, SFX_VOLUME);
+			//world.setTargetEnding(getEnding(END_RESIGN));
+		}
+		
 		public function onEndingFade() : void
 		{
 			
@@ -1241,7 +1263,7 @@ package
 			//FlxG.switchState(new PlayState);
 			
 			if ((countEndings == MAX_ENDINGS - 1
-				&& !endings[END_SECRET])
+				&& !endings[END_CATALYZE])
 				|| (countEndings == MAX_ENDINGS))
 			{
 				API.unlockMedal("resolve");
@@ -1261,7 +1283,7 @@ package
 				case END_EMBARK:
 					API.unlockMedal("embark");
 					break;
-				case END_SECRET:
+				case END_CATALYZE:
 					API.unlockMedal("catalyze");
 					break;
 				case END_FLEE:
@@ -1346,6 +1368,22 @@ package
 			return state == World.DARK && countLivingNpcs(World.DARK) == 0;
 		}
 		
+		public function get isEligibleForSolaceEnd() : Boolean
+		{
+			for each(var npc:NPC in npcs.members)
+			{
+				if (npc.state == state)
+				{
+					if (npc.solaceable)
+					{
+						return true;
+					}
+				}
+			}
+			
+			return false;
+		}
+		
 		public function get isEligibleForJuxtaposeEnd() : Boolean
 		{
 			return state == World.LIGHT && secretPedestal.canActivate;
@@ -1409,7 +1447,9 @@ package
 		{
 			return PlayState.instance.isEligibleForWorshipEnd ||
 			PlayState.instance.isEligibleForMournEnd ||
-			isEligibleForResignEnd;
+			isEligibleForResignEnd ||
+			isEligibleForJuxtaposeEnd ||
+			isEligibleForSolaceEnd;
 		}
 		
 		public function get hasPendingEnding() : Boolean
@@ -1419,7 +1459,8 @@ package
 			PlayState.instance.isEligibleForWorshipEnd ||
 			PlayState.instance.isEligibleForMournEnd ||
 			isEligibleForResignEnd ||
-			isEligibleForJuxtaposeEnd;
+			isEligibleForJuxtaposeEnd ||
+			isEligibleForSolaceEnd;
 		}
 		
 		public function unlockEnding(ending:int) : void
