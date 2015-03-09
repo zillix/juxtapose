@@ -11,6 +11,7 @@ package
 		
 		private var _currentText:String = "";
 		private var _currentDuration:Number = 0;
+		private var _currentCallback:Function = null;
 		
 		public function TextPlayer()
 		{
@@ -51,11 +52,17 @@ package
 		
 		public function advanceText() : void
 		{
+			if (_currentCallback != null)
+			{
+				_currentCallback();		
+			}
+			
 			if (textQueue.length > 0)
 			{
 				var next:PlayText = textQueue.splice(0, 1)[0];
 				_currentText = next.text;
 				_currentDuration = next.duration;
+				_currentCallback = next.callback;
 				
 			}
 			else
@@ -68,6 +75,7 @@ package
 		{
 			_currentText = "";
 			_currentDuration = 0;
+			_currentCallback = null;
 		}
 		
 		public function get currentText() : String
