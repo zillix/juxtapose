@@ -140,7 +140,7 @@ package
 		
 		public var endingSprites:FlxGroup;
 		
-		public var lastEndingUnlocked:int = END_ABANDON;
+		public var lastEndingUnlocked:int = -1;
 		public var lastEndingColor:uint = ABANDON_COLOR;
 		
 		public var _shouldShowEndings:Boolean = false;
@@ -1700,7 +1700,11 @@ package
 		{
 			var play:Player = getMyPlayer(state);
 	
-			if (play.isHopeless)
+			if (isEligibleForSquanderEnd)
+			{
+				onSquander();
+			}
+			else if (play.isHopeless)
 			{
 				onGiveUp();
 			}

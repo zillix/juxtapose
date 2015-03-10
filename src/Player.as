@@ -175,7 +175,7 @@ package
 						{
 							tend();
 						}
-						else if (PlayState.instance.isEligibleForSquanderEnd && isHopeless)
+						else if (PlayState.instance.isEligibleForSquanderEnd && isHopeless && !PlayState.instance.endingGame)
 						{
 							PlayState.instance.onSquander();
 						}
@@ -307,7 +307,7 @@ package
 				return PlayState.TEND_TEXT;
 			}
 			
-			if (PlayState.instance.isEligibleForSquanderEnd && isHopeless)
+			if (PlayState.instance.isEligibleForSquanderEnd && isHopeless && !PlayState.instance.endingGame)
 			{	
 				return PlayState.SQUANDER_TEXT;
 			}
