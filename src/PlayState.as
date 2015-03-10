@@ -40,7 +40,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.10n";
+		public var version:String = "v1.11n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -1107,9 +1107,12 @@ package
 			
 			trickyMask.visible = true;
 			
+			var machine:Machine;
+			
 			endingState = endState; // == World.LIGHT ? END_LIGHT_ESCAPE : END_DARK_ESCAPE;
 			
-			var machine:Machine;
+			var isPlantGrownToMax:Boolean = getMaxPlantGrowth() == Plant.MAX_GROWTH;
+			
 			if (endState == World.BOTH)
 			{
 				world.setHalfState();
@@ -1125,14 +1128,18 @@ package
 					machine.open();
 				}
 				
-				
-				if (getMaxPlantGrowth() == Plant.MAX_GROWTH)
+				if (isPlantGrownToMax)
 				{
 					waitingForSecret = true;
+					unlockEnding(END_CATALYZE);
+					giveUpDarkness.fill(SECRET_COLOR);
 				}
+				else
+				{
+					unlockEnding(END_EMBARK);
+					giveUpDarkness.fill(EMBARK_COLOR);
 				
-				unlockEnding(END_EMBARK);
-				giveUpDarkness.fill(EMBARK_COLOR);
+				}
 				//lastEndingColor = EMBARK_COLOR;
 			}
 			else
@@ -1142,9 +1149,19 @@ package
 				{
 					machine.open();
 				}
-				unlockEnding(endState == World.LIGHT ? END_ABANDON : END_FLEE);
-				//lastEndingColor = endState == World.LIGHT ? ABANDON_COLOR : FLEE_COLOR;
-				giveUpDarkness.fill(endState == World.LIGHT ? ABANDON_COLOR : FLEE_COLOR);
+				
+				if (isPlantGrownToMax && endState == World.LIGHT)
+				{
+					waitingForSecret = true;
+					unlockEnding(END_CATALYZE);
+					giveUpDarkness.fill(SECRET_COLOR);
+				}
+				else
+				{
+					unlockEnding(endState == World.LIGHT ? END_ABANDON : END_FLEE);
+					//lastEndingColor = endState == World.LIGHT ? ABANDON_COLOR : FLEE_COLOR;
+					giveUpDarkness.fill(endState == World.LIGHT ? ABANDON_COLOR : FLEE_COLOR);
+				}
 			}
 			
 			endingGame = true;
@@ -1321,7 +1338,10 @@ package
 			world.setTargetEnding(getEnding(lastEndingUnlocked));
 			_shouldShowEndings = true;
 			
-			unlockEndingMedal(lastEndingUnlocked);
+			if (lastEndingUnlocked > -1)
+			{
+				unlockEndingMedal(lastEndingUnlocked);
+			}
 			//FlxG.switchState(new PlayState);
 			
 			if ((countEndings == MAX_ENDINGS - 1

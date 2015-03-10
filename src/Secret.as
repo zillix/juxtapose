@@ -24,6 +24,7 @@ package
 			play("stand");
 			facing = RIGHT;
 			usesDefaultAnimations = false;
+			setGameState(WALK);
 		}
 		
 		override public function update() : void
