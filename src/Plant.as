@@ -4,6 +4,7 @@ package
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import org.flixel.*;
+	import com.newgrounds.API;
 	/**
 	 * ...
 	 * @author zillix
@@ -61,14 +62,23 @@ package
 				if (growth > 0)
 				{
 					grow();
+					
+					
 				}
 			}
 		}
 		
 		public function grow() : void
 		{
+			var logGrowth:Boolean = growth < MAX_GROWTH;
 			growth = Math.min(growth + 1, MAX_GROWTH);
 			play(growth.toString());
+			
+			if (logGrowth)
+			{
+				API.logCustomEvent("tree_growth_" + growth);
+			}
+			
 		}
 		
 		

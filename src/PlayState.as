@@ -40,7 +40,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.14n";
+		public var version:String = "v1.15n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -262,7 +262,7 @@ package
 				}
 				else
 				{
-					API.logCustomEvent("login_10+");
+					API.logCustomEvent("login_10_plus");
 				}
 			}
 			
@@ -275,13 +275,13 @@ package
 				save.data.game_starts = save.data.game_starts + 1;
 			}
 			var gameStarts:int = save.data.game_starts;
-			if (gameStarts < 20)
+			if (gameStarts < 10)
 			{
 				API.logCustomEvent("game_start_" + gameStarts);
 			}
 			else
 			{
-				API.logCustomEvent("game_start_20+");
+				API.logCustomEvent("game_start_10_plus");
 			}
 			
 			world = new World(FlxG.width / 2, FlxG.height / 2);
@@ -1708,7 +1708,7 @@ package
 			}
 			else
 			{
-				API.logCustomEvent("consecutive_endings_15+");
+				API.logCustomEvent("consecutive_endings_15_plus");
 			}
 			
 			API.logCustomEvent("endings_" + countEndings);
@@ -1728,7 +1728,7 @@ package
 					API.logCustomEvent("end_scorch");
 					break;
 				case END_NYX:
-					API.logCustomEvent("end_shrod");
+					API.logCustomEvent("end_shroud");
 					break;
 				case END_CATALYZE:
 					API.logCustomEvent("end_catalyze");

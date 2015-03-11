@@ -547,6 +547,7 @@ package
 				if (progressQuest)
 				{
 					PlayState.instance.solaceQuestProgress++;
+					API.logCustomEvent("solace_quest_" + PlayState.instance.solaceQuestProgress);
 				}
 			}
 			if (PlayState.instance.solaceQuestProgress == PlayState.SOLACE_COLOR_ORB
@@ -584,6 +585,8 @@ package
 						function () : void
 						{
 							PlayState.instance.solaceQuestProgress++;
+							API.logCustomEvent("solace_quest_" + PlayState.instance.solaceQuestProgress);
+				
 							makeSolaceable();
 						}
 					);
