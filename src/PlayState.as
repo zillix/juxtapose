@@ -181,8 +181,11 @@ package
 		public var nyxBeam:OrbBeam;
 		public var solBeam:OrbBeam;
 		
+		public static var loggedInThisSession:Boolean = false;
+		
 		public static var escapedThisSession:Boolean = false;
 		
+		public static var consecutiveEndings:int = 0;
 		
 		override public function create():void
 		{
@@ -197,6 +200,9 @@ package
 			
 			
 			super.create();
+			
+			API.logCustomEvent("game_load");
+			
 			
 			giveUpDarknessMaxAlpha = STARTING_ALPHA;
 			
@@ -236,6 +242,46 @@ package
 			if (save.data.inverted == true)
 			{
 				setupInvertFilter();
+			}
+			if (!loggedInThisSession)
+			{
+				loggedInThisSession = true;
+				if (save.data.logins == null)
+				{
+					save.data.logins = 1;
+				}
+				else
+				{
+					save.data.logins = save.data.logins + 1;
+				}
+				
+				var logins:int = save.data.logins;
+				if (logins < 10)
+				{
+					API.logCustomEvent("login_" + logins);
+				}
+				else
+				{
+					API.logCustomEvent("login_10+");
+				}
+			}
+			
+			if (save.data.game_starts == null)
+			{
+				save.data.game_starts = 1;
+			}
+			else
+			{
+				save.data.game_starts = save.data.game_starts + 1;
+			}
+			var gameStarts:int = save.data.game_starts;
+			if (gameStarts < 20)
+			{
+				API.logCustomEvent("game_start_" + gameStarts);
+			}
+			else
+			{
+				API.logCustomEvent("game_start_20+");
 			}
 			
 			world = new World(FlxG.width / 2, FlxG.height / 2);
@@ -660,10 +706,12 @@ package
 			if (FlxG.keys.pressed("R"))
 			{
 				giveUpDarkness.alpha += .5 * FlxG.elapsed;
-				if (giveUpDarkness.alpha >= 1)
+				if (giveUpDarkness.alpha >= 1 && !endingGame)
 				{
 					endingGame = true;
 					giveUpDarknessMaxAlpha = 1;
+					
+					API.unlockMedal("restart");
 				}
 			}
 			
@@ -704,10 +752,10 @@ package
 		
 		private function goFullScreen() : void
 		{
+			API.unlockMedal("full_screen");
 			FlxG.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			FlxG.stage.fullScreenSourceRect = new Rectangle(0,0,FlxG.width,FlxG.height); 
-    
-		}
+    	}
 		
 		private function goNormalScreen() : void
 		{
@@ -1301,6 +1349,7 @@ package
 			endingGame = true;
 			makePlayersKneel();
 			FlxG.play(NPCDieSound, SFX_VOLUME);
+			API.logCustomEvent("give_up");
 		}
 		
 		public const RESIGN_COLOR:uint = 0xff1E1757;//0xff888888;
@@ -1518,6 +1567,7 @@ package
 				giveUpDarknessMaxAlpha = 1;
 				endingGame = true;
 				unlockEnding(END_JUXTAPOSE);
+				
 				makePlayersKneel();
 				});
 		}
@@ -1530,6 +1580,7 @@ package
 			endingGame = true;
 			unlockEnding(END_WORSHIP);
 			makePlayersKneel();
+			
 			//world.setTargetEnding(getEnding(END_WORSHIP));
 		}
 		
@@ -1541,6 +1592,7 @@ package
 			endingGame = true;
 			unlockEnding(END_MOURN);
 			makePlayersKneel();
+			
 			//world.setTargetEnding(getEnding(END_MOURN));
 		}
 		
@@ -1585,6 +1637,8 @@ package
 			{
 				nyxBeam = new OrbBeam(nyxPoint.x, FlxG.height / 2, World.DARK, false);
 				orbBeams.add(nyxBeam)
+				
+				API.logCustomEvent("nyx_beam_created");
 			}
 		}
 		
@@ -1635,6 +1689,62 @@ package
 						break;
 				}
 			}
+			
+			consecutiveEndings++;
+			if (consecutiveEndings < 15)
+			{
+				API.logCustomEvent("consecutive_endings_" + consecutiveEndings);
+			}
+			else
+			{
+				API.logCustomEvent("consecutive_endings_15+");
+			}
+			
+			API.logCustomEvent("endings_" + countEndings);
+				
+				switch (ending)
+				{
+					case END_ABANDON:
+						API.logCustomEvent("end_abandon");
+						break;
+					case END_SOL:
+						API.logCustomEvent("end_scorch");
+						break;
+					case END_NYX:
+						API.logCustomEvent("end_shrod");
+						break;
+					case END_CATALYZE:
+						API.logCustomEvent("end_catalyze");
+						break;
+					case END_FLEE:
+						API.logCustomEvent("end_flee");
+						break;
+					case END_EMBARK:
+						API.logCustomEvent("end_embark");
+						break;
+					case END_JUXTAPOSE:
+						API.logCustomEvent("end_juxtapose");
+						break;
+					case END_SOLACE:
+						API.logCustomEvent("end_solace");
+						break;
+					case END_WORSHIP:
+						API.logCustomEvent("end_worship");
+						break;
+					case END_RESIGN:
+						API.logCustomEvent("end_resign");
+						break;
+					case END_MOURN:
+						API.logCustomEvent("end_mourn");
+						break;
+					case END_TEND:
+						API.logCustomEvent("end_tend");
+						break;
+					case END_SQUANDER:
+						API.logCustomEvent("end_squander");
+						break;
+				}
+			
 			endings[ending] = true;
 			lastEndingUnlocked = ending;
 			if (save.data.endings == null)

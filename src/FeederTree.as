@@ -2,6 +2,7 @@ package
 {
 	import flash.geom.Rectangle;
 	import org.flixel.*;
+	import com.newgrounds.API;
 	
 	/**
 	 * ...
@@ -48,6 +49,7 @@ package
 			{
 				orb.consume();
 				orbsEaten++;
+				API.logCustomEvent("tree_fed_orb");
 			}
 			
 			return bool;

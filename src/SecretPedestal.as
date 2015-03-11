@@ -2,6 +2,7 @@ package
 {
 	import flash.geom.Rectangle;
 	import org.flixel.*;
+	import com.newgrounds.API;
 	
 	/**
 	 * ...
@@ -11,6 +12,7 @@ package
 	{
 		[Embed(source = "data/secretPedestal.png")]	public var SecretPedestalSprite:Class;
 		[Embed(source = "data/lampSound.mp3")]	public var LampSound:Class;
+		[Embed(source = "data/juxtaposeSound.mp3")]	public var JuxtaposeSound:Class;
 		
 		private var DISAPPEAR_VELOCITY:int = -50;
 		private var REAPPEAR_VELOCITY:int = 100;
@@ -76,6 +78,8 @@ package
 				minRadius += radiusIncrement;
 				invertGlow.pulse(orbs.length, minRadius);
 				orb.consume();
+				
+				API.logCustomEvent("lamp_fed_orb");
 			}
 			
 			return bool;
@@ -186,6 +190,7 @@ package
 		
 		override public function activate() : void { 
 			PlayState.instance.onJuxtapose();
+			FlxG.play(JuxtaposeSound, PlayState.SFX_VOLUME);
 			invertGlow.visible = false;
 		}
 		

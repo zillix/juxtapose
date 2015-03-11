@@ -2,6 +2,7 @@ package
 {
 	import flash.geom.Rectangle;
 	import org.flixel.*;
+	import com.newgrounds.API;
 	
 	/**
 	 * ...
@@ -91,7 +92,13 @@ package
 			}
 			else
 			{
-				scale.x = Math.max(0, currentCharge / MAX_CHARGE *MAX_WIDTH / MIN_WIDTH);
+				var lastScale:Number = scale.x;
+				scale.x = Math.max(0, currentCharge / MAX_CHARGE * MAX_WIDTH / MIN_WIDTH);
+				if (lastScale == 0 && scale.x > 0)
+				{
+					API.logCustomEvent("sol_beam_visible");
+				}
+				
 				if (!chargedLastFrame && !isFullyCharged)
 				{
 					currentCharge = Math.max(currentCharge- FlxG.elapsed, MIN_CHARGE);
@@ -154,7 +161,13 @@ package
 		public function charge() : void
 		{
 			chargedLastFrame = true;
-			currentCharge = Math.min(FlxG.elapsed + currentCharge, MAX_CHARGE); 
+			var lastCharge:Number = currentCharge;
+			currentCharge = Math.min(FlxG.elapsed + currentCharge, MAX_CHARGE);
+			
+			if (lastCharge < MAX_CHARGE && currentCharge >= MAX_CHARGE)
+			{
+				API.logCustomEvent("sol_beam_created");
+			}
 		}
 		
 		public function get isFullyCharged() : Boolean

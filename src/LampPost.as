@@ -1,6 +1,7 @@
 package 
 {
 		import org.flixel.*;
+	import com.newgrounds.API;
 	/**
 	 * ...
 	 * @author zillix
@@ -37,6 +38,8 @@ package
 			{
 				var orbBeam:OrbBeam = new OrbBeam(x, y, state);
 				PlayState.instance.orbBeams.add(orbBeam);
+				
+				API.logCustomEvent("lamppost_orb_beam");
 			}
 			
 			return success;
