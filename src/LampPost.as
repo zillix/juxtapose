@@ -42,6 +42,8 @@ package
 				API.logCustomEvent("lamppost_orb_beam");
 			}
 			
+			API.logCustomEvent("lamppost_orb_placed");
+			
 			return success;
 			
 		}

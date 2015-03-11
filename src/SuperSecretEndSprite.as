@@ -12,7 +12,9 @@ package
 	{
 		[Embed(source = "data/nyxOverlay.png")]	public var NyxOverlaySprite:Class;
 		[Embed(source = "data/solOverlay.png")]	public var SolOverlaySprite:Class;
+		[Embed(source = "data/superSecretImpactSound.mp3")]	public var ImpactSound:Class;
 		
+		[Embed(source = "data/superSecretEndingSound.mp3")]	public var EndingSound:Class;
 		public var overlay:FlxSprite;
 		public var text:GameText;
 		public var state:int;
@@ -101,6 +103,7 @@ package
 					{
 						nextTextCount = 0;
 						text.text += textList[nextTextIndex];
+						FlxG.play(ImpactSound, PlayState.SFX_VOLUME);
 						nextTextIndex++;
 						FlxG.shake(.05, .2);
 					}
@@ -115,6 +118,7 @@ package
 		protected function startEnd() : void
 		{
 			startedEnd = true;
+			FlxG.play(EndingSound, PlayState.SFX_VOLUME);
 			FlxG.shake(.06, 2);
 			FlxG.flash(state == World.LIGHT ? 0xffffffff : 0xff000000, 
 				1, 

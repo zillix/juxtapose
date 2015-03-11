@@ -11,6 +11,7 @@ package
 	public class OrbBeam extends GameSprite 
 	{
 		[Embed(source = "data/orbBeamSound.mp3")]	public var OrbBeamSound:Class;
+		[Embed(source = "data/orbBeamActivated.mp3")]	public var BeamActivatedSound:Class;
 		public var MAX_WIDTH:Number = 40;
 		public var MIN_WIDTH:Number = 5;
 		public var EXPAND_SPEED:Number = 70;
@@ -120,6 +121,8 @@ package
 			if (!activated)
 			{
 				activated = true;
+				
+				FlxG.play(BeamActivatedSound, PlayState.SFX_VOLUME);
 				if (state == World.DARK)
 				{
 					PlayState.instance.triggerNyxEnding();

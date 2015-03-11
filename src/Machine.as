@@ -2,6 +2,7 @@ package
 {
 	import mx.core.FlexApplicationBootstrap;
 	import org.flixel.*;
+	import com.newgrounds.API;
 	
 	/**
 	 * ...
@@ -220,6 +221,12 @@ package
 			
 			var bool:Boolean = super.addOrb(orb);
 			orb.inMachine = true;
+			
+			if (state == World.LIGHT)
+			{
+				API.logCustomEvent("machine_orb_placed");
+			}
+			
 			return bool;
 		}
 		

@@ -40,7 +40,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.12n";
+		public var version:String = "v1.14n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -1069,6 +1069,15 @@ package
 		{
 			if (newState == World.LIGHT)
 			{
+				API.logCustomEvent("state_entered_light");
+			}
+			else
+			{
+				API.logCustomEvent("state_entered_dark");
+			}
+			if (newState == World.LIGHT)
+			{
+				API.logCustomEvent("day_completed_" + day);
 				day++;
 				FlxG.playMusicAtPosition(useAlternateMusic ? DayThemeLong : DayThemeLongSlow, MUSIC_VOLUME, FlxG.music.channel.position);
 			}
@@ -1142,6 +1151,8 @@ package
 				solBeam = new OrbBeam(plant.x - 5, plant.y, World.LIGHT, false);
 				solBeam.charges = true;
 				orbBeams.add(solBeam);
+				
+				API.logCustomEvent("plant_orb_beam");
 			}
 		}
 		
@@ -1702,48 +1713,55 @@ package
 			
 			API.logCustomEvent("endings_" + countEndings);
 				
-				switch (ending)
-				{
-					case END_ABANDON:
-						API.logCustomEvent("end_abandon");
-						break;
-					case END_SOL:
-						API.logCustomEvent("end_scorch");
-						break;
-					case END_NYX:
-						API.logCustomEvent("end_shrod");
-						break;
-					case END_CATALYZE:
-						API.logCustomEvent("end_catalyze");
-						break;
-					case END_FLEE:
-						API.logCustomEvent("end_flee");
-						break;
-					case END_EMBARK:
-						API.logCustomEvent("end_embark");
-						break;
-					case END_JUXTAPOSE:
-						API.logCustomEvent("end_juxtapose");
-						break;
-					case END_SOLACE:
-						API.logCustomEvent("end_solace");
-						break;
-					case END_WORSHIP:
-						API.logCustomEvent("end_worship");
-						break;
-					case END_RESIGN:
-						API.logCustomEvent("end_resign");
-						break;
-					case END_MOURN:
-						API.logCustomEvent("end_mourn");
-						break;
-					case END_TEND:
-						API.logCustomEvent("end_tend");
-						break;
-					case END_SQUANDER:
-						API.logCustomEvent("end_squander");
-						break;
-				}
+			API.logCustomEvent("ending_completed");
+			if (isInverted)
+			{
+				API.logCustomEvent("ending_completed_inverted");
+			}
+			
+			switch (ending)
+			{
+				case END_ABANDON:
+					API.logCustomEvent("end_abandon");
+					break;
+				case END_SOL:
+					API.logCustomEvent("end_scorch");
+					break;
+				case END_NYX:
+					API.logCustomEvent("end_shrod");
+					break;
+				case END_CATALYZE:
+					API.logCustomEvent("end_catalyze");
+					break;
+				case END_FLEE:
+					API.logCustomEvent("end_flee");
+					break;
+				case END_EMBARK:
+					API.logCustomEvent("end_embark");
+					break;
+				case END_JUXTAPOSE:
+					API.logCustomEvent("end_juxtapose");
+					break;
+				case END_SOLACE:
+					API.logCustomEvent("end_solace");
+					break;
+				case END_WORSHIP:
+					API.logCustomEvent("end_worship");
+					break;
+				case END_RESIGN:
+					API.logCustomEvent("end_resign");
+					break;
+				case END_MOURN:
+					API.logCustomEvent("end_mourn");
+					break;
+				case END_TEND:
+					API.logCustomEvent("end_tend");
+					break;
+				case END_SQUANDER:
+					API.logCustomEvent("end_squander");
+					break;
+			}
+			
 			
 			endings[ending] = true;
 			lastEndingUnlocked = ending;

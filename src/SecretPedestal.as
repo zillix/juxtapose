@@ -44,6 +44,7 @@ package
 				isDisappeared = true;
 				startReappearing();
 				PlayState.escapedThisSession = false;
+				API.logCustomEvent("lamp_appeared");
 			}
 			else if (!PlayState.instance.escapedOnce)
 			{
@@ -80,6 +81,11 @@ package
 				orb.consume();
 				
 				API.logCustomEvent("lamp_fed_orb");
+				
+				if (PlayState.escapedThisSession)
+				{
+					API.logCustomEvent("lamp_fed_after_appeared");
+				}
 			}
 			
 			return bool;

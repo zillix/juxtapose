@@ -5,6 +5,7 @@ package
 	import org.flixel.FlxObject;
 	import org.flixel.*;
 	
+	import com.newgrounds.API;
 	/**
 	 * ...
 	 * @author zillix
@@ -599,8 +600,18 @@ package
 			
 			_lastExamineTextLength = text.length;
 			setGameState(TALKING);
-			
 			timesTalkedToday++;
+			
+			API.logCustomEvent("npc_talked");
+			
+			if (state == World.LIGHT)
+			{
+				API.logCustomEvent("npc_light_talked_today_" + timesTalkedToday);
+			}
+			else
+			{
+				API.logCustomEvent("npc_dark_talked_today_" + timesTalkedToday);
+			}
 			
 			return text;
 		}
