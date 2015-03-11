@@ -33,7 +33,7 @@ package
 		override public function addOrb(orb:Orb) : Boolean
 		{
 			var success:Boolean = super.addOrb(orb);
-			if (success)
+			if (success && PlayState.instance.isInverted)
 			{
 				var orbBeam:OrbBeam = new OrbBeam(x, y, state);
 				PlayState.instance.orbBeams.add(orbBeam);
