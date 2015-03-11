@@ -40,7 +40,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.11n";
+		public var version:String = "v1.12n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -1315,7 +1315,7 @@ package
 			//world.setTargetEnding(getEnding(END_RESIGN));
 		}
 		
-		public const SOLACE_COLOR:uint = 0xffFEBAD4;//0xff888888;
+		public const SOLACE_COLOR:uint = 0xffA302DA;//0xffFEBAD4;//0xff888888;
 		public function onSolace() : void
 		{
 			lastEndingColor = SOLACE_COLOR;
@@ -1385,6 +1385,15 @@ package
 					break;
 				case END_ABANDON:
 					API.unlockMedal("abandon");
+					break;
+				case END_SOL:
+					API.unlockMedal("scorch");
+					break;
+				case END_NYX:
+					API.unlockMedal("shroud");
+					break;
+				case END_SOLACE:
+					API.unlockMedal("solace");
 					break;
 			}
 		}
