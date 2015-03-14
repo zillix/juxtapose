@@ -256,14 +256,7 @@ package
 				}
 				
 				var logins:int = save.data.logins;
-				if (logins < 10)
-				{
-					API.logCustomEvent("login_" + logins);
-				}
-				else
-				{
-					API.logCustomEvent("login_10_plus");
-				}
+				logIncrementalStat(logins, "login", [1,2,3,5,10]);
 			}
 			
 			if (save.data.game_starts == null)
@@ -275,14 +268,7 @@ package
 				save.data.game_starts = save.data.game_starts + 1;
 			}
 			var gameStarts:int = save.data.game_starts;
-			if (gameStarts < 10)
-			{
-				API.logCustomEvent("game_start_" + gameStarts);
-			}
-			else
-			{
-				API.logCustomEvent("game_start_10_plus");
-			}
+			logIncrementalStat(gameStarts, "game_start", [1,2,3,5,10]);
 			
 			world = new World(FlxG.width / 2, FlxG.height / 2);
 			add(world);
@@ -1077,7 +1063,8 @@ package
 			}
 			if (newState == World.LIGHT)
 			{
-				API.logCustomEvent("day_completed_" + day);
+				logIncrementalStat(day, "day_completed", [1,2,3,4]);
+			
 				day++;
 				FlxG.playMusicAtPosition(useAlternateMusic ? DayThemeLong : DayThemeLongSlow, MUSIC_VOLUME, FlxG.music.channel.position);
 			}
@@ -1702,17 +1689,10 @@ package
 			}
 			
 			consecutiveEndings++;
-			if (consecutiveEndings < 15)
-			{
-				API.logCustomEvent("consecutive_endings_" + consecutiveEndings);
-			}
-			else
-			{
-				API.logCustomEvent("consecutive_endings_15_plus");
-			}
+			logIncrementalStat(consecutiveEndings, "consecutive_endings", [1,2,3,5,10,15]);
 			
-			API.logCustomEvent("endings_" + countEndings);
-				
+			logIncrementalStat(countEndings, "endings", [1,2,3,5,10,13]);
+			
 			API.logCustomEvent("ending_completed");
 			if (isInverted)
 			{
@@ -1884,6 +1864,39 @@ package
 		public function get escapedOnce() : Boolean
 		{
 			return save.data.escapedOnce;
+		}
+		
+		public function logIncrementalStat(statValue:int, statName:String, milestones:Array) : void
+		{
+			var suffix:String = null;
+			for (var i:int = 0; i < milestones.length; i++)
+			{
+				if (i == milestones.length - 1
+					&& statValue >= milestones[i])
+				{
+					suffix = "" + milestones[i] + "_plus";
+					break;
+				}
+				
+				if (statValue <= milestones[i])
+				{
+					if (i == 0
+						|| (milestones[i] - milestones[i - 1] == 1))
+					{
+						suffix = "" + milestones[i];
+					}
+					else
+					{
+						suffix = "" + milestones[i - 1] + "-" + milestones[i];
+					}
+					break;
+				}
+			}
+			
+			if (suffix != null)
+			{
+				API.logCustomEvent(statName + "_" + suffix);
+			}
 		}
 	}
 }
