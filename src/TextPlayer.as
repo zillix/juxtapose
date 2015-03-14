@@ -12,6 +12,7 @@ package
 		private var _currentText:String = "";
 		private var _currentDuration:Number = 0;
 		private var _currentCallback:Function = null;
+		private var _currentColor:uint = PlayText.DEFAULT_TEXT_COLOR;
 		
 		public function TextPlayer()
 		{
@@ -63,6 +64,7 @@ package
 				_currentText = next.text;
 				_currentDuration = next.duration;
 				_currentCallback = next.callback;
+				_currentColor = next.color;
 				
 			}
 			else
@@ -76,11 +78,17 @@ package
 			_currentText = "";
 			_currentDuration = 0;
 			_currentCallback = null;
+			_currentColor = PlayText.DEFAULT_TEXT_COLOR;
 		}
 		
 		public function get currentText() : String
 		{
 			return _currentText;
+		}
+		
+		public function get currentColor() : uint
+		{
+			return _currentColor;
 		}
 		
 		public function get isBusy() : Boolean

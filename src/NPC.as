@@ -16,6 +16,8 @@ package
 		[Embed(source = "data/npcDie.mp3")]	public var NPCDieSound:Class;
 		[Embed(source = "data/solaceOrbSound.mp3")]	public var SolaceOrbSound:Class;
 		[Embed(source = "data/gameRestarted.mp3")]	public var MadeSolaceableSound:Class;
+		[Embed(source = "data/advanceQuest2.mp3")]	public var AdvanceQuestSound:Class;
+		
 		
 			
 		public static const MAX_HEALTH:int = 3;
@@ -362,19 +364,21 @@ package
 			var progressQuest:Boolean = false;
 			var player:Player = PlayState.instance.getMyPlayer(PlayState.instance.state);
 			var isInverted:Boolean = PlayState.instance.save.data.inverted;
+			var list:Vector.<PlayText>;
 			if (isLight)
 			{
 				if (day == 0)
 				{
+					list = (PlayState.instance.countEndings == 0 || timesTalkedToday == 0) ? text : quips;
 					if (!isInverted)
 					{
-						addText(text, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
-						addText(text, "hold DOWN to rest for the night");
+						addText(list, "the " + Orb.ORB_NAME_PLURAL + " can power the " + Machine.MACHINE_NAME + " overnight");
+						addText(list, "hold DOWN to rest for the night");
 					}
 					else
 					{
-						addText(text, "something feels different... but I can't tell why");
-						addText(text, "everything seems wrong somehow");
+						addText(list, "something feels different... but I can't tell why");
+						addText(list, "everything seems wrong somehow");
 					}
 					
 					if (PlayState.instance.countEndings == 0)
@@ -451,6 +455,8 @@ package
 			{
 				if (day == 0)
 				{
+					list = (PlayState.instance.countEndings == 0 || timesTalkedToday == 0) ? text : quips;
+						
 					if (!isInverted)
 					{
 						addText(text, "they will come again tonight");
@@ -459,9 +465,8 @@ package
 					}
 					else
 					{
-						addText(text, "I sense a strange power");
-						addText(text, "they fear the light, but now so do I");
-						blockQuips = true;
+						addText(list, "I sense a strange power");
+						addText(list, "they fear the light, but now so do I");
 					}
 				}
 				
@@ -523,6 +528,11 @@ package
 				addText(quips, "this seems... familiar somehow. have I been here before?");
 			}
 			
+			addText(quips, "how did I get here?");
+			addText(quips, "who are you? why won't you speak?");
+			addText(quips, "this is a lonely place...");
+			
+			
 			
 			/*if (!hasEnding(PlayState.END_SECRET))
 			{
@@ -546,8 +556,7 @@ package
 						
 				if (progressQuest)
 				{
-					PlayState.instance.solaceQuestProgress++;
-					API.logCustomEvent("solace_quest_" + PlayState.instance.solaceQuestProgress);
+					PlayState.instance.progressSolaceQuest();
 				}
 			}
 			if (PlayState.instance.solaceQuestProgress == PlayState.SOLACE_COLOR_ORB
@@ -557,15 +566,16 @@ package
 				{
 					text.length = 0;
 					blockQuips = true;
-					addText(text, "I won't forget her", -2, 
+					PlayState.instance.progressSolaceQuest();
+					addText(text, "I won't forget her", -1, 
 						function() : void {
-							PlayState.instance.solaceQuestProgress++;
 							FlxG.play(SolaceOrbSound, PlayState.SFX_VOLUME);
 							FlxG.flash(PlayState.instance.SOLACE_COLOR, 1, function() : void {
 									player.carriedOrb.makeSolaceColored();
 								}
 							);
-						}
+						},
+						PlayState.instance.SOLACE_COLOR
 					);
 					
 				}
@@ -579,16 +589,17 @@ package
 				{
 					text.length = 0;
 					blockQuips = true;
-					addText(text, "where did you get that orb?");
-					addText(text, "she knew it was my favorite color...");
+					PlayState.instance.progressSolaceQuest();
+					addText(text, "where did you get that orb?", -1, null, PlayState.instance.SOLACE_COLOR);
+					addText(text, "she knew it was my favorite color...", -1, null, PlayState.instance.SOLACE_COLOR);
 					addText(text, "I choose to believe we'll someday be reunited", -1, 
 						function () : void
 						{
-							PlayState.instance.solaceQuestProgress++;
 							API.logCustomEvent("solace_quest_" + PlayState.instance.solaceQuestProgress);
 				
 							makeSolaceable();
-						}
+						},
+						PlayState.instance.SOLACE_COLOR
 					);
 				}
 			}
@@ -596,25 +607,55 @@ package
 				
 			
 			if (!blockQuips 
-				&& quips.length > 0 && Math.random() > .5)
+				&& quips.length > 0
+				&& (text.length == 0 || Math.random() > .5))
 			{
 				text.push(quips[int(Math.random() * quips.length)]);
 			}
 			
 			_lastExamineTextLength = text.length;
 			setGameState(TALKING);
-			timesTalkedToday++;
 			
-			API.logCustomEvent("npc_talked");
-			
-			if (state == World.LIGHT)
+			// Hacky monkey patch
+			if (text.length > 0)
 			{
-				API.logCustomEvent("npc_light_talked_today_" + timesTalkedToday);
+				var firstText:PlayText = text[0];
+				var onFirstText:Function = function() : void
+				{
+					timesTalkedToday++;
+					API.logCustomEvent("npc_talked");
+					
+					if (state == World.LIGHT)
+					{
+						PlayState.instance.logIncrementalStat(timesTalkedToday, "npc_light_talked_today", [1, 2, 3]);
+					}
+					else
+					{	
+						PlayState.instance.logIncrementalStat(timesTalkedToday, "npc_dark_talked_today", [1, 2, 3]);
+					}
+				}
+				
+				if (firstText.callback == null)
+				{
+					firstText.callback = onFirstText;
+				}
+				else
+				{
+					var cachedCallback:Function = firstText.callback;
+					firstText.callback = function() : void
+					{
+						onFirstText();
+						cachedCallback();
+					}
+				}
+				
+				
 			}
 			else
 			{
-				API.logCustomEvent("npc_dark_talked_today_" + timesTalkedToday);
+				trace("Failed to generate text!");
 			}
+			
 			
 			return text;
 		}
@@ -634,8 +675,8 @@ package
 			{
 				case 0:
 					// Dude 1
-					addText(text, "we traveled here together...");
-					addText(text, "where is she now? she should be here...");
+					addText(text, "we traveled here together...", -1, null, PlayState.instance.SOLACE_COLOR );
+					addText(text, "where is she now? she should be here...", -1, null, PlayState.instance.SOLACE_COLOR);
 					progressQuest = true;
 					PlayState.instance.solaceQuestStartState = PlayState.instance.state;
 					break;
@@ -643,8 +684,8 @@ package
 					// Dude 2
 					if (solaceStartState != currentState)
 					{
-						addText(text, "she said we would both make it here");
-						addText(text, "I wish I knew if she was still alive");
+						addText(text, "she said we would both make it here", -1, null, PlayState.instance.SOLACE_COLOR);
+						addText(text, "I wish I knew if she was still alive", -1, null, PlayState.instance.SOLACE_COLOR);
 						progressQuest = true;
 					}
 					else // Dude 1
@@ -661,10 +702,10 @@ package
 					}
 					else // Dude 2
 					{
-						addText(text, "these orbs remind me of her", 1.5);
-						addText(text, "I wish I could see one closer...", 2);
-						addText(text, "I could create something to remember her by", 2);
-					
+						addText(text, "these orbs remind me of her", 1.5, null, PlayState.instance.SOLACE_COLOR);
+						addText(text, "I wish I could see one closer...", 2, null, PlayState.instance.SOLACE_COLOR);
+						addText(text, "I could create something to remember her by", 2, null, PlayState.instance.SOLACE_COLOR);
+						FlxG.play(AdvanceQuestSound, PlayState.SFX_VOLUME);
 					}
 					break;
 				case 3:

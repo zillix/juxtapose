@@ -33,6 +33,7 @@ package
 		[Embed(source = "data/npcDie.mp3")]	public var NPCDieSound:Class;
 		[Embed(source = "data/endingComplete.mp3")]	public var EndingCompleteSound:Class;
 		[Embed(source = "data/gameRestarted.mp3")]	public var GameRestartedSound:Class;
+		[Embed(source = "data/advanceQuest2.mp3")]	public var AdvanceQuestSound:Class;
 		
 		
 		[Embed(source = "data/DayTheme-long.mp3")]	public var DayThemeLong:Class;
@@ -40,7 +41,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.15n";
+		public var version:String = "v1.16n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -186,6 +187,8 @@ package
 		public static var escapedThisSession:Boolean = false;
 		
 		public static var consecutiveEndings:int = 0;
+		
+		public static const DEFAULT_TEXT_COLOR:uint = 0xffffffff;
 		
 		override public function create():void
 		{
@@ -353,6 +356,7 @@ package
 			
 			darkText = new GameText(World.DARK, world.x, FlxG.height - 20, FlxG.width, "here is some test dark text that is pretty long and just keeps going to see what it looks like");
 			darkText.setFormat("HACHEA", 16, 0xffffffff, "center");
+			darkText.shadow = 0xff888888;
 			darkText.alpha = 0;
 			
 			textFields.add(darkText);
@@ -550,6 +554,8 @@ package
 			textPlayer.update();
 			lightText.text = textPlayer.currentText;
 			darkText.text = textPlayer.currentText;
+			lightText.color = textPlayer.currentColor;
+			darkText.color = textPlayer.currentColor;
 			if (textPlayer.currentText == "")
 			{
 				lightText.alpha = 0;
@@ -1269,22 +1275,25 @@ package
 			}
 		}
 		
-		public function getOrbCount(state:int) : int
+		public function getOrbCount(State:int) : int
 		{
 			var count:int = 0;
 			
-			count += tower.orbs.length;
+			if (State == state)
+			{
+				count += tower.orbs.length;
+			}
 			
-			var player:Player = getMyPlayer(state);
+			var player:Player = getMyPlayer(State);
 			if (player && player.carriedOrb != null)
 			{
 				count++;
 			}
 			
-			var group:FlxGroup = state == World.LIGHT ? PlayState.instance.lightOrbHolders : PlayState.instance.darkOrbHolders;
+			var group:FlxGroup = State == World.LIGHT ? PlayState.instance.lightOrbHolders : PlayState.instance.darkOrbHolders;
 			for each (var holder:OrbHolder in group.members)
 			{
-				if (holder.canTakeOrb)
+				if (holder.canTakeOrb && !(holder is Tower))
 				{
 					count += holder.orbs.length;
 				}
@@ -1897,6 +1906,13 @@ package
 			{
 				API.logCustomEvent(statName + "_" + suffix);
 			}
+		}
+		
+		public function progressSolaceQuest() : void
+		{
+			solaceQuestProgress++;
+			FlxG.play(AdvanceQuestSound, SFX_VOLUME);
+			API.logCustomEvent("solace_quest_" + PlayState.instance.solaceQuestProgress);
 		}
 	}
 }

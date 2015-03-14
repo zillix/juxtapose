@@ -74,14 +74,14 @@ package
 		
 		
 		
-		protected function addText(vec:Vector.<PlayText>, text:String, duration:int = -1, callback:Function = null) : void
+		protected function addText(vec:Vector.<PlayText>, text:String, duration:int = -1, callback:Function = null, color:uint = 0xffffff) : void
 		{
 			if (duration < 0)
 			{
 				duration = PlayText.DEFAULT_DURATION;
 			}
 			
-			vec.push(new PlayText(text, duration, callback));
+			vec.push(new PlayText(text, duration, callback, color));
 		}
 		
 		public function get isActive() : Boolean { return state == PlayState.instance.state; }
