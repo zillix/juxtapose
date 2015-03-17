@@ -45,7 +45,9 @@ package
 		
 		public function get isShown() : Boolean
 		{
-			return PlayState.instance.shouldShowEndings && PlayState.instance.isEndingUnlocked(end);
+			return PlayState.instance.isEndingUnlocked(end)
+			&& (PlayState.instance.shouldShowEndings || 
+				FlxG.keys.UP);
 		}
 		
 		override public function update() : void
