@@ -81,6 +81,11 @@ package
 			textFieldAlpha = Math.min(1, textFieldAlpha + FlxG.elapsed * TEXT_FIELD_SHOW_RATE);
 			textField.alpha = textFieldAlpha;
 			
+			if (PlayState.instance.superSecretEnding.members.length > 0)
+			{
+				textField.alpha = 0;
+			}
+			
 			textField.x = x;
 			
 			if (carriedOrb != null)

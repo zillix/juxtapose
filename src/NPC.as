@@ -424,6 +424,10 @@ package
 							}
 							break;
 					}
+					if (!hasEnding(PlayState.END_SOL))
+					{
+						addText(quips, "sometimes I just like to stand and watch the plant...");
+					}
 				}
 					
 				

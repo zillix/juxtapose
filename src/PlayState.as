@@ -41,7 +41,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.19n";
+		public var version:String = "v1.20n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
