@@ -41,7 +41,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.16n";
+		public var version:String = "v1.19n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -189,6 +189,8 @@ package
 		public static var consecutiveEndings:int = 0;
 		
 		public static const DEFAULT_TEXT_COLOR:uint = 0xffffffff;
+		
+		public var deletingSave:Boolean = false;
 		
 		override public function create():void
 		{
@@ -392,14 +394,14 @@ package
 			titleText.shadow = 0xff888888;
 			add(titleText);
 			
-			if (countEndings >= MAX_ENDINGS)
+			/*if (countEndings >= MAX_ENDINGS)
 			{
 				completeText = new GameText(World.BOTH, FlxG.width / 2, 120, 400, "*complete*", true);
 				completeText.setFormat("HACHEA", 10, 0xffffff, "center");
 				completeText.offset.x = completeText.width / 2;
 				completeText.shadow = 0xff888888;
 				add(completeText);
-			}
+			}*/
 			
 			
 			zillixText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height - 160, 100, "made by zillix", true);
@@ -575,7 +577,7 @@ package
 			
 			if (!hasStartedGame)
 			{
-				if (FlxG.keys.any())
+				if (FlxG.keys.any() && !FlxG.keys.pressed("Q"))
 				{
 					hasStartedGame = true;
 					giveUpDarknessMaxAlpha = 0;
@@ -678,7 +680,7 @@ package
 				}
 			}
 			
-			if (FlxG.keys.any() && readyToRestart)
+			if (FlxG.keys.any() && !FlxG.keys.pressed("Q") && readyToRestart)
 			{
 				restartGame();
 			}
@@ -703,7 +705,21 @@ package
 					endingGame = true;
 					giveUpDarknessMaxAlpha = 1;
 					
-					API.unlockMedal("restart");
+					API.logCustomEvent("restart");
+				}
+			}
+			
+			if (FlxG.keys.pressed("Q") && !hasStartedGame && !deletingSave)
+			{
+				giveUpDarkness.alpha += .015 * FlxG.elapsed;
+				if (giveUpDarkness.alpha >= 1 && !endingGame)
+				{
+					deletingSave = true;
+					FlxG.flash(0xffffffff, 4, function() : void
+					{
+						save.erase();
+						restartEverything();
+					});
 				}
 			}
 			
@@ -728,7 +744,7 @@ package
 				FlxG.camera.fade(0xff000000, 2, onEndingFade);
 			}
 			
-			if (giveUpDarkness.alpha > giveUpDarknessMaxAlpha && !FlxG.keys.R)
+			if (giveUpDarkness.alpha > giveUpDarknessMaxAlpha && !FlxG.keys.R && !FlxG.keys.Q)
 			{
 				giveUpDarkness.alpha = Math.max(giveUpDarknessMaxAlpha, giveUpDarkness.alpha - FlxG.elapsed * GIVE_UP_DARKNESS_ALPHA_FADE_RATE);
 			}
@@ -1338,7 +1354,7 @@ package
 			return max;
 		}
 		
-		public const SQUANDER_COLOR:uint = 0xff888888;
+		public const SQUANDER_COLOR:uint = 0xff444444;
 		public function onSquander() : void
 		{
 			lastEndingColor = SQUANDER_COLOR;
@@ -1400,9 +1416,7 @@ package
 			}
 			//FlxG.switchState(new PlayState);
 			
-			if ((countEndings == MAX_ENDINGS - 1
-				&& !endings[END_CATALYZE])
-				|| (countEndings == MAX_ENDINGS))
+			if (countEndings == MAX_ENDINGS)
 			{
 				API.unlockMedal("resolve");
 			}
@@ -1653,6 +1667,7 @@ package
 		{
 			var ending:SuperSecretEndSprite = new SuperSecretEndSprite(World.DARK);
 			superSecretEnding.add(ending);
+			makePlayersKneel();
 		}
 		
 		public const NYX_COLOR:uint = 0xff222222;
@@ -1669,6 +1684,7 @@ package
 		{
 			var ending:SuperSecretEndSprite = new SuperSecretEndSprite(World.LIGHT);
 			superSecretEnding.add(ending);
+			makePlayersKneel();
 		}
 		
 		public const SOL_COLOR:uint = 0xffCCCCCC;

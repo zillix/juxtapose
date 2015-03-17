@@ -427,28 +427,25 @@ package
 				}
 					
 				
-				if (PlayState.instance.countEndings >= 4)
+				if (!hasEnding(PlayState.END_WORSHIP))
 				{
-					if (!hasEnding(PlayState.END_WORSHIP))
-					{
-						addText(quips,  "we have better uses for the orbs, but that tree calls to me...");
-					}
-					if (!hasEnding(PlayState.END_RESIGN))
-					{
-						addText(quips,  "if all of the antennae on the " + Machine.MACHINE_NAME + " break, we'll be trapped");
-					}
-					if (!hasEnding(PlayState.END_TEND))
-					{
-						addText(quips, "this wouldn't be so bad with a garden to care for");
-					}
-					if (!hasEnding(PlayState.END_SQUANDER))
-					{
-						addText(quips, "what would we do if we ran out of orbs?");
-					}
-					if (!hasEnding(PlayState.END_JUXTAPOSE))
-					{
-						addText(quips, "what does that hanging lamp do?");
-					}
+					addText(quips,  "we have better uses for the orbs, but that tree calls to me...");
+				}
+				if (!hasEnding(PlayState.END_RESIGN))
+				{
+					addText(quips,  "if all of the antennae on the " + Machine.MACHINE_NAME + " break, we'll be trapped");
+				}
+				if (!hasEnding(PlayState.END_TEND))
+				{
+					addText(quips, "this wouldn't be so bad with a garden to care for");
+				}
+				if (!hasEnding(PlayState.END_SQUANDER))
+				{
+					addText(quips, "what would we do if we ran out of orbs?");
+				}
+				if (!hasEnding(PlayState.END_JUXTAPOSE))
+				{
+					addText(quips, "what does that hanging lamp do?");
 				}
 			}
 			else
