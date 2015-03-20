@@ -415,14 +415,13 @@ package
 		
 		override public function get activateString() : String
 		{
-			if ((isLight || PlayState.instance.isEligibleForBothEnd)
-				&& PlayState.instance.getMaxPlantGrowth() >= Plant.MAX_GROWTH)
-			{
-				return PlayState.CATALYZE_TEXT;
-			}
-			else if (PlayState.instance.isEligibleForResignEnd)
+			if (PlayState.instance.isEligibleForResignEnd)
 			{
 				return PlayState.RESIGN_TEXT;
+			}
+			else if (PlayState.instance.isEligibleForCatalyzeEnd)
+			{
+				return PlayState.CATALYZE_TEXT;
 			}
 			else if (PlayState.instance.isEligibleForBothEnd)
 			{

@@ -41,7 +41,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.20n";
+		public var version:String = "v1.22n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -1196,7 +1196,7 @@ package
 					machine.open();
 				}
 				
-				if (isPlantGrownToMax)
+				if (isEligibleForCatalyzeEnd)
 				{
 					waitingForSecret = true;
 					unlockEnding(END_CATALYZE);
@@ -1497,7 +1497,12 @@ package
 		
 		public function get isEligibleForTendEnd() : Boolean
 		{
-			return getMaxPlantGrowth() == Plant.MAX_GROWTH
+			return state == World.LIGHT && getMaxPlantGrowth() == Plant.MAX_GROWTH
+		}
+		
+		public function get isEligibleForCatalyzeEnd() : Boolean
+		{
+			return isEligibleForTendEnd && getMachine(World.LIGHT).charge >= Machine.MAX_LIGHTS;
 		}
 		
 		public function get isEligibleForBothEnd() : Boolean
@@ -1511,7 +1516,12 @@ package
 		
 		public function get isEligibleForSquanderEnd() : Boolean
 		{
-			return PlayState.instance.getOrbCount(World.LIGHT) + PlayState.instance.getOrbCount(World.DARK) == 0;
+			var count:int = PlayState.instance.getOrbCount(World.LIGHT) + PlayState.instance.getOrbCount(World.DARK);
+			if (count == 0)
+			{
+				trace("eligible for squander");
+			}
+			return  !hasPendingEnding && (PlayState.instance.getOrbCount(World.LIGHT) + PlayState.instance.getOrbCount(World.DARK) == 0);
 		}
 		
 		public function get isEligibleForResignEnd() : Boolean
@@ -1619,18 +1629,12 @@ package
 		
 		public function get pendingEndingBlocksSleeping() : Boolean
 		{
-			return PlayState.instance.isEligibleForWorshipEnd ||
-			PlayState.instance.isEligibleForMournEnd ||
-			isEligibleForResignEnd ||
-			isEligibleForJuxtaposeEnd ||
-			isEligibleForSolaceEnd;
+			return hasPendingEnding;
 		}
 		
 		public function get hasPendingEnding() : Boolean
 		{
-			return PlayState.instance.isEligibleForBothEnd ||
-			PlayState.instance.isEligibleForTendEnd ||
-			PlayState.instance.isEligibleForWorshipEnd ||
+			return PlayState.instance.isEligibleForWorshipEnd ||
 			PlayState.instance.isEligibleForMournEnd ||
 			isEligibleForResignEnd ||
 			isEligibleForJuxtaposeEnd ||
