@@ -41,7 +41,7 @@ package
 		[Embed(source = "data/DayTheme-longslow.mp3")]	public var DayThemeLongSlow:Class;
 		[Embed(source = "data/NightTheme-longslow.mp3")]	public var NightThemeLongSlow:Class;
 		
-		public var version:String = "v1.22n";
+		public var version:String = "v1.23n";
 		
 		public var DARKNESS_COLOR:uint = 0xff888888;
 		
@@ -404,7 +404,7 @@ package
 			}*/
 			
 			
-			zillixText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height - 160, 100, "made by zillix", true);
+			zillixText = new GameText(World.BOTH, FlxG.width / 2, FlxG.height - 160, 3000, "f: fullscreen\nmade by zillix", true);
 			zillixText.setFormat("HACHEA", 16, 0xffffff, "center");
 			zillixText.offset.x = zillixText.width / 2;
 			zillixText.shadow = 0xff888888;
@@ -1497,7 +1497,7 @@ package
 		
 		public function get isEligibleForTendEnd() : Boolean
 		{
-			return state == World.LIGHT && getMaxPlantGrowth() == Plant.MAX_GROWTH
+			return getMaxPlantGrowth() == Plant.MAX_GROWTH
 		}
 		
 		public function get isEligibleForCatalyzeEnd() : Boolean

@@ -18,7 +18,7 @@ package {
 		{
 			super.create(FlashEvent);
 			
-			var medalPopup:MedalPopup = new MedalPopup();
+			var medalPopup:MedalPopup = new SilentMedalPopup();
             medalPopup.x = medalPopup.y = 5;
             if (root is MovieClip)
 			{
